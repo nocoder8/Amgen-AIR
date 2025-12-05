@@ -3362,6 +3362,41 @@ function testRecruiterFeedbackCount() {
     Logger.log(`\nDuplicate Profile_id + Position_id combinations found: ${duplicateKeys.size}`);
     if (duplicateKeys.size > 0) {
       Logger.log(`Duplicate keys: ${Array.from(duplicateKeys).slice(0, 10).join(', ')}`);
+      
+      // Show details for each duplicate key
+      Array.from(duplicateKeys).slice(0, 5).forEach(key => {
+        const duplicateRows = finalFilteredData.filter(row => {
+          if (row.length > recruiterIdx && row.length > feedbackStatusIdx && row.length > profileIdIdx && row.length > positionIdIdx) {
+            const recruiter = row[recruiterIdx] ? String(row[recruiterIdx]).trim() : '';
+            const feedbackStatus = row[feedbackStatusIdx] ? String(row[feedbackStatusIdx]).trim() : '';
+            const rowKey = `${row[profileIdIdx]}_${row[positionIdIdx]}`;
+            return recruiter === 'Thulan Kumar' && feedbackStatus.toUpperCase() === 'SUBMITTED' && rowKey === key;
+          }
+          return false;
+        });
+        
+        Logger.log(`\nDuplicate key ${key} details:`);
+        duplicateRows.forEach((row, idx) => {
+          const status = row.length > statusIdx ? String(row[statusIdx]).trim() : 'N/A';
+          const feedbackStatus = row.length > feedbackStatusIdx ? String(row[feedbackStatusIdx]).trim() : 'N/A';
+          Logger.log(`  Row ${idx + 1}: Status=${status}, Feedback_status=${feedbackStatus}`);
+        });
+        
+        // Check which one was kept after deduplication
+        const keptRow = deduplicatedRows.find(row => {
+          if (row.length > profileIdIdx && row.length > positionIdIdx) {
+            const rowKey = `${row[profileIdIdx]}_${row[positionIdIdx]}`;
+            return rowKey === key;
+          }
+          return false;
+        });
+        
+        if (keptRow) {
+          const keptStatus = keptRow.length > statusIdx ? String(keptRow[statusIdx]).trim() : 'N/A';
+          const keptFeedback = keptRow.length > feedbackStatusIdx ? String(keptRow[feedbackStatusIdx]).trim() : 'N/A';
+          Logger.log(`  KEPT: Status=${keptStatus}, Feedback_status=${keptFeedback}`);
+        }
+      });
     }
     
     // Final summary
