@@ -1290,7 +1290,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
              <thead>
                 <tr>
                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Recruiter</th>
-                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Sent</th>
+                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">INVITATIONS<br>SENT</th>
                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">COMPLETED<br>INTERVIEWS</th>
                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">UPCOMING<br>SCHEDULED INTERVIEW</th>
                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">PENDING<br>CANDIDATE INTERVIEW</th>
@@ -1346,7 +1346,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
              <thead>
                 <tr>
                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Creator</th>
-                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Sent</th>
+                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">INVITATIONS<br>SENT</th>
                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">COMPLETED<br>INTERVIEWS</th>
                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">UPCOMING<br>SCHEDULED INTERVIEW</th>
                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">PENDING<br>CANDIDATE INTERVIEW</th>
@@ -1485,7 +1485,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
              <thead>
                 <tr>
                             <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Job Function</th>
-                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Sent</th>
+                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">INVITATIONS<br>SENT</th>
                             <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">COMPLETED<br>INTERVIEWS</th>
                             <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">UPCOMING<br>SCHEDULED INTERVIEW</th>
                             <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">PENDING<br>CANDIDATE INTERVIEW</th>
