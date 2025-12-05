@@ -1163,12 +1163,11 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
           } catch (e) { return false; }
       });
 
-      if (filteredDates.length === 0) return '<p style="font-size: 0.85em; color: #757575; margin-top: 15px; text-align: center;">No interview invitations sent in the last 7 days.</p>';
+      if (filteredDates.length === 0) return '<p style="font-size: 11px; color: #999; margin-top: 12px; text-align: center;">No invitations in last 7 days.</p>';
 
-      let tableHtml = '<table align="center" border="0" cellpadding="0" cellspacing="0" width="90%" style="border-collapse: collapse; margin-top: 15px; margin-bottom: 15px; border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden;"><thead><tr><th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: left; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">🗓️ Date (DD-MMM-YY)</th><th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">✉️ Invitations Sent</th></tr></thead><tbody>';
+      let tableHtml = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;"><thead><tr><th style="padding: 8px; text-align: left; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Date</th><th style="padding: 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Count</th></tr></thead><tbody>';
       filteredDates.forEach((date, index) => {
-          const bgColor = index % 2 === 0 ? '#fafafa' : '#ffffff';
-          tableHtml += `<tr style="background-color: ${bgColor};"><td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: left; font-size: 12px; vertical-align: middle;">${date}</td><td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${dailyCounts[date]}</td></tr>`;
+          tableHtml += `<tr><td style="padding: 10px 8px; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${date}</td><td style="padding: 10px 8px; text-align: right; font-size: 12px; color: #667eea; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${dailyCounts[date]}</td></tr>`;
       });
       tableHtml += '</tbody></table>';
       return tableHtml;
@@ -1183,69 +1182,52 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
   let html = `<!DOCTYPE html>
 <html>
 <head>
-  <title>${VS_COMPANY_NAME_RB} AI Interview Recruiter Report</title>
+  <title>${VS_COMPANY_NAME_RB} AI Interview Daily Summary</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- No <style> block needed - all styles are inline -->
 </head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; padding: 10px; margin: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
-  <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 850px;">
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; line-height: 1.5; color: #1a1a1a; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; margin: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
+  <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 900px;">
     <tr>
       <td align="center">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin: 20px auto; padding: 25px;">
-          <!-- Header -->
+        <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffffff; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); margin: 0 auto; overflow: hidden;">
+          <!-- Modern Header with Gradient -->
           <tr>
-            <td style="padding-bottom: 15px; margin-bottom: 25px; border-bottom: 2px solid #eee;">
-              <h1 style="color: #1a237e; text-align: center; font-size: 26px; margin: 0;">AI Recruiter Adoption: Daily Summary</h1> <!-- <<< Renamed Header -->
+            <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 32px 24px; text-align: center;">
+              <h1 style="color: #ffffff; font-size: 28px; font-weight: 700; margin: 0; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">AI Interview Daily Summary</h1>
+              <p style="color: rgba(255,255,255,0.9); font-size: 14px; margin: 8px 0 0 0; font-weight: 400;">${VS_COMPANY_NAME_RB} • ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
             </td>
           </tr>
 
-          <!-- Top KPI Boxes - Table Layout -->
+          <!-- Modern KPI Cards -->
           <tr>
-            <td style="padding-top: 25px; padding-bottom: 10px;">
-              <table border="0" cellpadding="0" cellspacing="15" width="100%" style="border-collapse: separate; table-layout: fixed;">
+            <td style="padding: 24px;">
+              <table border="0" cellpadding="0" cellspacing="12" width="100%" style="border-collapse: separate;">
                 <tr>
                   <td width="25%" style="vertical-align: top; padding: 0;">
-                    <table width="100%" border="0" cellpadding="0" cellspacing="0" style="height: 130px; border: 1px solid #cccccc; border-radius: 8px; border-collapse: collapse; table-layout: fixed; overflow: hidden; background-color: #e8f5e9;">
-                      <tr><td style="border: none; vertical-align: middle; text-align: center; padding: 6px 10px; font-size: 12px; font-weight: bold; color: #424242; border-bottom: 1px solid #cccccc; height: 30px;">✉️ AI Invitations Sent</td></tr>
-                      <tr><td style="border: none; vertical-align: middle; text-align: center; padding: 10px; font-size: 34px; font-weight: bold; height: 100%; color: #2e7d32;">
-                          ${metrics.totalSent}
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                  <td width="25%" style="vertical-align: top; padding: 0;">
-                    <table width="100%" border="0" cellpadding="0" cellspacing="0" style="height: 130px; border: 1px solid #cccccc; border-radius: 8px; border-collapse: collapse; table-layout: fixed; overflow: hidden; background-color: #e3f2fd;">
-                      <tr><td style="border: none; vertical-align: middle; text-align: center; padding: 6px 10px; font-size: 12px; font-weight: bold; color: #424242; border-bottom: 1px solid #cccccc; height: 30px;">✅ Completion Rate</td></tr>
-                      <tr><td style="border: none; vertical-align: middle; text-align: center; padding: 10px; font-size: 34px; font-weight: bold; height: 100%; color: #1976d2;">
-                          ${metrics.postSept10KpiCompletionRate}<span style="font-size: 16px; font-weight: normal; margin-left: 3px;">%</span>
-                        </td>
-                      </tr>
-                    </table>
-                    <div style="text-align: center; font-size: 10px; color: #666; margin-top: 3px;">
-                      (Excl. invites sent < 48 hours)
-                    </div>
-                    <div style="text-align: center; font-size: 9px; color: #999; margin-top: 2px;">
-                      Overall Completion Rate: ${metrics.completionRateOriginal}%
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); text-align: center;">
+                      <div style="font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Invitations Sent</div>
+                      <div style="font-size: 36px; font-weight: 700; color: #ffffff; line-height: 1;">${metrics.totalSent}</div>
                     </div>
                   </td>
                   <td width="25%" style="vertical-align: top; padding: 0;">
-                    <table width="100%" border="0" cellpadding="0" cellspacing="0" style="height: 130px; border: 1px solid #cccccc; border-radius: 8px; border-collapse: collapse; table-layout: fixed; overflow: hidden; background-color: #fff3e0;">
-                      <tr><td style="border: none; vertical-align: middle; text-align: center; padding: 6px 10px; font-size: 12px; font-weight: bold; color: #424242; border-bottom: 1px solid #cccccc; height: 30px;">⏱️ Avg Time Sent to Completion (Post-Sept 10th)*</td></tr>
-                      <tr><td style="border: none; vertical-align: middle; text-align: center; padding: 10px; font-size: 34px; font-weight: bold; height: 100%; color: #ef6c00;">
-                          ${metrics.postSept10AvgTimeToScheduleDays !== null ? metrics.postSept10AvgTimeToScheduleDays : 'N/A'}<span style="font-size: 16px; font-weight: normal; margin-left: 3px;">days</span>
-                        </td>
-                      </tr>
-                    </table>
+                    <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3); text-align: center;">
+                      <div style="font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Completion Rate</div>
+                      <div style="font-size: 36px; font-weight: 700; color: #ffffff; line-height: 1;">${metrics.postSept10KpiCompletionRate}<span style="font-size: 20px;">%</span></div>
+                      <div style="font-size: 9px; color: rgba(255,255,255,0.8); margin-top: 6px;">Excl. <48hrs</div>
+                    </div>
                   </td>
                   <td width="25%" style="vertical-align: top; padding: 0;">
-                    <table width="100%" border="0" cellpadding="0" cellspacing="0" style="height: 130px; border: 1px solid #cccccc; border-radius: 8px; border-collapse: collapse; table-layout: fixed; overflow: hidden; background-color: #f3e5f5;">
-                      <tr><td style="border: none; vertical-align: middle; text-align: center; padding: 6px 10px; font-size: 12px; font-weight: bold; color: #424242; border-bottom: 1px solid #cccccc; height: 30px;">⭐ Avg Match Stars (Completed)</td></tr>
-                      <tr><td style="border: none; vertical-align: middle; text-align: center; padding: 10px; font-size: 34px; font-weight: bold; height: 100%; color: #8e24aa;">
-                          ${metrics.avgMatchStars !== null ? metrics.avgMatchStars : 'N/A'}
-                        </td>
-                      </tr>
-                    </table>
+                    <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3); text-align: center;">
+                      <div style="font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Avg Time</div>
+                      <div style="font-size: 36px; font-weight: 700; color: #ffffff; line-height: 1;">${metrics.postSept10AvgTimeToScheduleDays !== null ? metrics.postSept10AvgTimeToScheduleDays : 'N/A'}<span style="font-size: 18px;">d</span></div>
+                    </div>
+                  </td>
+                  <td width="25%" style="vertical-align: top; padding: 0;">
+                    <div style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(250, 112, 154, 0.3); text-align: center;">
+                      <div style="font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Match Stars</div>
+                      <div style="font-size: 36px; font-weight: 700; color: #ffffff; line-height: 1;">${metrics.avgMatchStars !== null ? metrics.avgMatchStars : 'N/A'}</div>
+                    </div>
                   </td>
                 </tr>
               </table>
@@ -1256,55 +1238,52 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
 
           <!-- Side-by-side Sections - Table Layout -->
           <tr>
-            <td style="padding-bottom: 15px;">
-              <table border="0" cellpadding="0" cellspacing="15" width="100%" style="border-collapse: separate; table-layout: fixed;">
+            <td style="padding: 0 24px 24px;">
+              <table border="0" cellpadding="0" cellspacing="12" width="100%" style="border-collapse: separate;">
                 <tr>
-                  <!-- Left Cell: Completion Status -->
                   <td width="50%" style="vertical-align: top; padding: 0;">
-                    <div style="background-color: #fff; padding: 15px; border: 1px solid #eee; border-radius: 4px;">
-                      <div style="font-weight: bold; font-size: 16px; color: #3f51b5; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee;">📊 AI Screening Completion Status</div>
-                      <table align="center" border="0" cellpadding="0" cellspacing="0" width="95%" style="border-collapse: collapse; table-layout: fixed; margin-top: 15px; margin-bottom: 15px; border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden;"> <!-- Added table-layout: fixed -->
-                         <thead><tr><th style="width: 50%; border: 1px solid #e0e0e0; padding: 6px 10px; text-align: left; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Status</th><th style="width: 60px; border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Count</th><th style="width: 60px; border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">%</th></tr></thead> <!-- Restored Status Header & Added Widths -->
-                 <tbody>
-                 ${Object.entries(metrics.interviewStatusDistribution)
-                             .sort(([, dataA], [, dataB]) => dataB.count - dataA.count) // Sort by count descending
-                             .map(([status, data], index) => `<tr style="background-color: ${index % 2 === 0 ? '#fafafa' : '#ffffff'};"> <!-- Removed title attribute -->
-                                 <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: left; font-size: 12px; vertical-align: middle; word-wrap: break-word;">${status}</td> <!-- Restored Status Cell, Added word-wrap -->
-                                 <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.count}</td>
-                                 <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle; color: #0056b3;">${data.percentage}%</td>
-                             </tr>`).join('')}
-                 </tbody>
-             </table>
-                     <p style="font-size: 0.85em; color: #757575; margin-top: 15px;">Percentage is based on the total number of invitations sent (all time).</p>
-            </div>
-          </td>
-                  <!-- Right Cell: Daily Invitations -->
+                    <div style="background: #ffffff; padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                      <div style="font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 12px; letter-spacing: -0.2px;">📊 Completion Status</div>
+                      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                         <thead><tr><th style="padding: 8px; text-align: left; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Status</th><th style="padding: 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Count</th><th style="padding: 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">%</th></tr></thead>
+                         <tbody>
+                         ${Object.entries(metrics.interviewStatusDistribution)
+                                     .sort(([, dataA], [, dataB]) => dataB.count - dataA.count)
+                                     .map(([status, data], index) => `<tr>
+                                         <td style="padding: 10px 8px; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${status}</td>
+                                         <td style="padding: 10px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.count}</td>
+                                         <td style="padding: 10px 8px; text-align: right; font-size: 12px; color: #667eea; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.percentage}%</td>
+                                     </tr>`).join('')}
+                         </tbody>
+                     </table>
+                    </div>
+                  </td>
                   <td width="50%" style="vertical-align: top; padding: 0;">
-                     <div style="background-color: #fff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
-                       <div style="font-weight: bold; font-size: 16px; color: #3f51b5; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee;">🗓️ Daily Invitations Sent (Last 7 Days)</div>
+                     <div style="background: #ffffff; padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                       <div style="font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 12px; letter-spacing: -0.2px;">🗓️ Daily Invitations (7d)</div>
                        ${generateTimeseriesTable(metrics.dailySentCounts)}
-            </div>
-          </td>
-        </tr>
-      </table>
+                    </div>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
 
           <!-- Breakdown by Recruiter (Table) -->
           <tr>
             <td style="padding-top: 10px; padding-bottom: 10px;">
-              <div style="background-color: #fff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 15px;">
-                 <div style="font-weight: bold; font-size: 16px; color: #3f51b5; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee;">🧑‍💼 Breakdown by Recruiter of the Position</div>
-                 <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; margin-top: 15px; margin-bottom: 15px; border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden;">
+              <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 16px;">
+                 <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">🧑‍💼 Breakdown by Recruiter of the Position</div>
+                 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
              <thead>
                 <tr>
-                           <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: left; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase; width: 180px;">Recruiter Name</th>
-                           <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Sent</th>
-                           <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Completed (# / %)</th>
-                           <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Scheduled</th>
-                           <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Pending (# / %)</th>
-                           <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Feedback Submitted</th>
-                           <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Recruiter Submission Awaited</th>
+                           <th style="padding: 10px 8px; text-align: left; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Recruiter</th>
+                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Sent</th>
+                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Completed</th>
+                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Scheduled</th>
+                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Pending</th>
+                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Feedback</th>
+                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Awaiting</th>
                  </tr>
              </thead>
              <tbody>
@@ -1332,17 +1311,17 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                              .map(([rec, data], index) => {
                                 const medal = recruiterMedalMap[rec] || ''; // Get medal or empty string
                                 return `
-                                  <tr style="background-color: ${index % 2 === 0 ? '#fafafa' : '#ffffff'};">
-                                     <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: left; font-size: 12px; vertical-align: middle; font-weight: bold; width: 180px;">${medal}${medal ? ' ' : ''}${rec}</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.sent}</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.completedNumber} (<span style="color: #0056b3;">${data.completedPercentOfSent}%</span>)</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.scheduled}</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.pendingNumber} (<span style="color: #0056b3;">${data.pendingPercentOfSent}%</span>)</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.feedbackSubmitted}</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">
+                                  <tr>
+                                     <td style="padding: 12px 8px; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${medal}${medal ? ' ' : ''}${rec}</td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.sent}</td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.completedNumber} <span style="color: #667eea; font-size: 11px;">${data.completedPercentOfSent}%</span></td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.scheduled}</td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.pendingNumber} <span style="color: #667eea; font-size: 11px;">${data.pendingPercentOfSent}%</span></td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.feedbackSubmitted}</td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; border-bottom: 1px solid #f5f5f5;">
                                         ${data.recruiterSubmissionAwaited > 0 ? 
-                                            `<span style="color: red; font-weight: bold;">${data.recruiterSubmissionAwaited}</span>` : 
-                                            data.recruiterSubmissionAwaited
+                                            `<span style="color: #f5576c; font-weight: 700;">${data.recruiterSubmissionAwaited}</span>` : 
+                                            `<span style="color: #999;">${data.recruiterSubmissionAwaited}</span>`
                                         }
                                       </td>
                                   </tr>
@@ -1359,19 +1338,19 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
 
           <!-- Breakdown by Creator (Table) -->
           <tr>
-            <td style="padding-top: 10px; padding-bottom: 10px;">
-              <div style="background-color: #fff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 15px;">
-                 <div style="font-weight: bold; font-size: 16px; color: #3f51b5; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee;">👤 Breakdown by Creator</div>
-                 <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; margin-top: 15px; margin-bottom: 15px; border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden;">
+            <td style="padding: 0 24px 24px;">
+              <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                 <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">👤 Breakdown by Creator</div>
+                 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
              <thead>
                 <tr>
-                           <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: left; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase; width: 180px;">Creator User ID</th>
-                           <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Sent</th>
-                           <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Completed (# / %)</th>
-                           <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Scheduled</th>
-                           <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Pending (# / %)</th>
-                           <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Feedback Submitted</th>
-                           <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Recruiter Submission Awaited</th>
+                           <th style="padding: 10px 8px; text-align: left; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Creator</th>
+                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Sent</th>
+                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Completed</th>
+                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Scheduled</th>
+                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Pending</th>
+                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Feedback</th>
+                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Awaiting</th>
                  </tr>
              </thead>
              <tbody>
@@ -1399,17 +1378,17 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                              .map(([crt, data], index) => {
                                 const medal = creatorMedalMap[crt] || ''; // Get medal or empty string
                                 return `
-                                  <tr style="background-color: ${index % 2 === 0 ? '#fafafa' : '#ffffff'};">
-                                     <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: left; font-size: 12px; vertical-align: middle; font-weight: bold; width: 180px;">${medal}${medal ? ' ' : ''}${crt}</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.sent}</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.completedNumber} (<span style="color: #0056b3;">${data.completedPercentOfSent}%</span>)</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.scheduled}</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.pendingNumber} (<span style="color: #0056b3;">${data.pendingPercentOfSent}%</span>)</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.feedbackSubmitted}</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">
+                                  <tr>
+                                     <td style="padding: 12px 8px; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${medal}${medal ? ' ' : ''}${crt}</td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.sent}</td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.completedNumber} <span style="color: #667eea; font-size: 11px;">${data.completedPercentOfSent}%</span></td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.scheduled}</td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.pendingNumber} <span style="color: #667eea; font-size: 11px;">${data.pendingPercentOfSent}%</span></td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.feedbackSubmitted}</td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; border-bottom: 1px solid #f5f5f5;">
                                         ${data.recruiterSubmissionAwaited > 0 ? 
-                                            `<span style="color: red; font-weight: bold;">${data.recruiterSubmissionAwaited}</span>` : 
-                                            data.recruiterSubmissionAwaited
+                                            `<span style="color: #f5576c; font-weight: 700;">${data.recruiterSubmissionAwaited}</span>` : 
+                                            `<span style="color: #999;">${data.recruiterSubmissionAwaited}</span>`
                                         }
                                       </td>
                                   </tr>
@@ -1427,16 +1406,16 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
           <!-- AI Interview Coverage Bar Chart -->
           ${aiCoverageMetrics ? `
           <tr>
-            <td style="padding-top: 10px; padding-bottom: 10px;">
+            <td style="padding: 0 24px 24px;">
               ${generateAICoverageBarChartHtml(aiCoverageMetrics)}
             </td>
           </tr>
           ` : `
           <tr>
-            <td style="padding-top: 10px; padding-bottom: 10px;">
-              <div style="background-color: #fff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 15px;">
-                <div style="font-weight: bold; font-size: 16px; color: #3f51b5; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee;">📊 AI Interview Coverage by Recruiter (Bar Chart)</div>
-                <div style="text-align: center; padding: 40px 20px; color: #666; font-size: 16px; font-style: italic;">Coming soon</div>
+            <td style="padding: 0 24px 24px;">
+              <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">📊 AI Interview Coverage by Recruiter</div>
+                <div style="text-align: center; padding: 60px 20px; color: #999; font-size: 14px; font-weight: 500;">Coming soon</div>
               </div>
             </td>
           </tr>
@@ -1445,63 +1424,62 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
           <!-- Detailed Validation Sheets -->
           ${recruiterValidationSheets ? `
           <tr>
-            <td style="padding-top: 10px; padding-bottom: 10px;">
+            <td style="padding: 0 24px 24px;">
               ${generateValidationSheetsHtml(recruiterValidationSheets)}
             </td>
           </tr>
           ` : `
           <tr>
-            <td style="padding-top: 10px; padding-bottom: 10px;">
-              <div style="background-color: #fff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 15px;">
-                <div style="font-weight: bold; font-size: 16px; color: #3f51b5; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee;">📋 Detailed Validation Sheets</div>
-                <div style="text-align: center; padding: 40px 20px; color: #666; font-size: 16px; font-style: italic;">Coming soon</div>
+            <td style="padding: 0 24px 24px;">
+              <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">📋 Detailed Validation Sheets</div>
+                <div style="text-align: center; padding: 60px 20px; color: #999; font-size: 14px; font-weight: 500;">Coming soon</div>
               </div>
             </td>
           </tr>
           `}
 
-          <!-- Recruiter Last Activity Table (Moved Up) -->
+          <!-- Creator Last Invite Activity -->
           <tr>
-            <td style="padding-top: 10px; padding-bottom: 10px;">
-              <div style="background-color: #fff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 15px;">
-                <div style="font-weight: bold; font-size: 16px; color: #3f51b5; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee;">⏱️ Creator Last Invite Activity</div>
-                <table align="center" border="0" cellpadding="0" cellspacing="0" width="95%" style="border-collapse: collapse; margin-top: 15px; margin-bottom: 15px; border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden;">
+            <td style="padding: 0 24px 24px;">
+              <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">⏱️ Creator Last Invite Activity</div>
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
                   <thead>
                     <tr>
-                      <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: left; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Creator User ID</th>
-                      <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Last Invite Sent</th>
-                      <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase; width: 250px;">Daily Trend (Last 10 Days)</th> <!-- Added Header -->
-                         </tr>
+                      <th style="padding: 10px 8px; text-align: left; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Creator</th>
+                      <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Last Sent</th>
+                      <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Trend (10d)</th>
+                    </tr>
                   </thead>
                   <tbody>
                     ${creatorActivityData && creatorActivityData.length > 0 ?
                         creatorActivityData.map((activity, index) => {
-                            const bgColor = index % 2 === 0 ? '#fafafa' : '#ffffff';
                             let daysAgoText = '';
                             if (activity.daysAgo === -1) {
                                 daysAgoText = 'Today';
                             } else if (activity.daysAgo === 0) {
                                 daysAgoText = 'Yesterday';
                             } else if (activity.daysAgo >= 1) {
-                                const actualDays = activity.daysAgo + 1; // Adjust because floor(today-yesterday) is 0
-                                daysAgoText = `${actualDays} calendar ${actualDays === 1 ? 'day' : 'days'} ago`;
+                                const actualDays = activity.daysAgo + 1;
+                                daysAgoText = `${actualDays}d ago`;
                             } else {
-                                daysAgoText = 'Unknown'; // Should not happen
+                                daysAgoText = 'Unknown';
                             }
 
                               return `
-                              <tr style="background-color: ${bgColor};">
-                                <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: left; font-size: 12px; vertical-align: middle; font-weight: bold;">${activity.creator}</td>
-                                <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${daysAgoText}</td>
-                                <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; font-family: monospace;">${activity.dailyTrend || 'N/A'}</td> <!-- Added Trend Column -->
+                              <tr>
+                                <td style="padding: 12px 8px; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${activity.creator}</td>
+                                <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${daysAgoText}</td>
+                                <td style="padding: 12px 8px; text-align: center; font-size: 11px; color: #667eea; font-weight: 500; font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace; border-bottom: 1px solid #f5f5f5;">${activity.dailyTrend || 'N/A'}</td>
                               </tr>`;
                         }).join('')
                         :
-                        '<tr><td colspan="3" style="text-align:center; border: 1px solid #e0e0e0; padding: 10px; color: #777; font-size: 12px;">No creator activity data found or Creator_user_id column missing.</td></tr>' // Updated colspan
+                        '<tr><td colspan="3" style="text-align:center; padding: 20px; color: #999; font-size: 12px;">No creator activity data found.</td></tr>'
                     }
              </tbody>
          </table>
-                 ${creatorIdx_Log === -1 ? '<p style="font-size: 0.85em; color: #757575; margin-top: 15px;">Creator activity based on the "Creator_user_id" column, which was not found in the log sheet.</p>' : ''}
+                 ${creatorIdx_Log === -1 ? '<p style="font-size: 11px; color: #999; margin-top: 12px;">Creator_user_id column not found.</p>' : ''}
      </div>
             </td>
           </tr>
@@ -1510,36 +1488,36 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
 
      <!-- Breakdown by Job Function -->
           <tr>
-             <td style="padding-top: 10px; padding-bottom: 10px;">
-               <div style="background-color: #fff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 15px;">
-                  <div style="font-weight: bold; font-size: 16px; color: #3f51b5; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee;">💼 Breakdown by Job Function</div>
-                  <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; margin-top: 15px; margin-bottom: 15px; border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden;">
+             <td style="padding: 0 24px 24px;">
+               <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                  <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">💼 Breakdown by Job Function</div>
+                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
              <thead>
                 <tr>
-                            <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: left; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Job Function</th>
-                            <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Sent</th>
-                            <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Completed (# / %)</th>
-                            <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Scheduled</th>
-                            <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Pending (# / %)</th>
-                            <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Feedback Submitted</th>
-                            <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Recruiter Submission Awaited</th>
+                            <th style="padding: 10px 8px; text-align: left; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Job Function</th>
+                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Sent</th>
+                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Completed</th>
+                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Scheduled</th>
+                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Pending</th>
+                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Feedback</th>
+                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Awaiting</th>
                  </tr>
              </thead>
              <tbody>
                  ${Object.entries(metrics.byJobFunction)
                      .sort(([funcA], [funcB]) => funcA.localeCompare(funcB))
                               .map(([func, data], index) => `
-                                  <tr style="background-color: ${index % 2 === 0 ? '#fafafa' : '#ffffff'};">
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: left; font-size: 12px; vertical-align: middle; font-weight: bold;">${func}</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.sent}</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.completedNumber} (<span style="color: #0056b3;">${data.completedPercentOfSent}%</span>)</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.scheduled}</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.pendingNumber} (<span style="color: #0056b3;">${data.pendingPercentOfSent}%</span>)</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.feedbackSubmitted}</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">
+                                  <tr>
+                                      <td style="padding: 12px 8px; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${func}</td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.sent}</td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.completedNumber} <span style="color: #667eea; font-size: 11px;">${data.completedPercentOfSent}%</span></td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.scheduled}</td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.pendingNumber} <span style="color: #667eea; font-size: 11px;">${data.pendingPercentOfSent}%</span></td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.feedbackSubmitted}</td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; border-bottom: 1px solid #f5f5f5;">
                                         ${data.recruiterSubmissionAwaited > 0 ? 
-                                            `<span style="color: red; font-weight: bold;">${data.recruiterSubmissionAwaited}</span>` : 
-                                            data.recruiterSubmissionAwaited
+                                            `<span style="color: #f5576c; font-weight: 700;">${data.recruiterSubmissionAwaited}</span>` : 
+                                            `<span style="color: #999;">${data.recruiterSubmissionAwaited}</span>`
                                         }
                                       </td>
                          </tr>
@@ -1552,36 +1530,36 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
 
      <!-- Breakdown by Location Country -->
            <tr>
-             <td style="padding-top: 10px; padding-bottom: 10px;">
-               <div style="background-color: #fff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 15px;">
-                  <div style="font-weight: bold; font-size: 16px; color: #3f51b5; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee;">🌍 Breakdown by Location Country</div>
-                   <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; margin-top: 15px; margin-bottom: 15px; border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden;">
+             <td style="padding: 0 24px 24px;">
+               <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                  <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">🌍 Breakdown by Location Country</div>
+                   <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
              <thead>
                 <tr>
-                            <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: left; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Country</th>
-                            <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Sent</th>
-                            <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Completed (# / %)</th>
-                            <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Scheduled</th>
-                            <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Pending (# / %)</th>
-                            <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Feedback Submitted</th>
-                            <th style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 11px; vertical-align: middle; background-color: #f5f5f5; font-weight: bold; color: #424242; text-transform: uppercase;">Recruiter Submission Awaited</th>
+                            <th style="padding: 10px 8px; text-align: left; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Country</th>
+                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Sent</th>
+                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Completed</th>
+                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Scheduled</th>
+                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Pending</th>
+                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Feedback</th>
+                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Awaiting</th>
                  </tr>
              </thead>
              <tbody>
                  ${Object.entries(metrics.byCountry)
                      .sort(([ctryA], [ctryB]) => ctryA.localeCompare(ctryB))
                               .map(([ctry, data], index) => `
-                                  <tr style="background-color: ${index % 2 === 0 ? '#fafafa' : '#ffffff'};">
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: left; font-size: 12px; vertical-align: middle; font-weight: bold;">${ctry}</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.sent}</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.completedNumber} (<span style="color: #0056b3;">${data.completedPercentOfSent}%</span>)</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.scheduled}</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.pendingNumber} (<span style="color: #0056b3;">${data.pendingPercentOfSent}%</span>)</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.feedbackSubmitted}</td>
-                                      <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">
+                                  <tr>
+                                      <td style="padding: 12px 8px; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${ctry}</td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.sent}</td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.completedNumber} <span style="color: #667eea; font-size: 11px;">${data.completedPercentOfSent}%</span></td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.scheduled}</td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.pendingNumber} <span style="color: #667eea; font-size: 11px;">${data.pendingPercentOfSent}%</span></td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.feedbackSubmitted}</td>
+                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; border-bottom: 1px solid #f5f5f5;">
                                         ${data.recruiterSubmissionAwaited > 0 ? 
-                                            `<span style="color: red; font-weight: bold;">${data.recruiterSubmissionAwaited}</span>` : 
-                                            data.recruiterSubmissionAwaited
+                                            `<span style="color: #f5576c; font-weight: 700;">${data.recruiterSubmissionAwaited}</span>` : 
+                                            `<span style="color: #999;">${data.recruiterSubmissionAwaited}</span>`
                                         }
                                       </td>
                          </tr>
@@ -1592,13 +1570,17 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
              </td>
           </tr>
 
-          <!-- New row for the footnote under KPIs -->
+          <!-- Modern Footer -->
           <tr>
-            <td colspan="4" style="text-align: center; padding-top: 5px; font-size: 10px; color: #666;">
-              *Avg Time Sent to Completion calculation uses Schedule Start Date as completion proxy for interviews completed post-September 10th, 2025.<br>
-              **Completion Rate KPI** excludes invitations sent within the last 48 hours. Breakdown table % includes all sent invites.<br>
-              Overall completion rate (including all invites): ${metrics.completionRateOriginal}%.<br>
-              Report generated on ${new Date().toLocaleString()}. Timezone: ${Session.getScriptTimeZone()}.
+            <td style="padding: 24px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-top: 1px solid #e0e0e0;">
+              <div style="text-align: center; font-size: 10px; color: #666; line-height: 1.6;">
+                <div style="margin-bottom: 4px;">*Avg Time uses Schedule Start Date as completion proxy (post-Sept 10, 2025)</div>
+                <div style="margin-bottom: 4px;">**Completion Rate excludes invites sent < 48 hours. Table % includes all invites.</div>
+                <div style="margin-bottom: 4px; font-weight: 600;">Overall completion rate: ${metrics.completionRateOriginal}%</div>
+                <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.1); color: #999;">
+                  Generated ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })} • ${Session.getScriptTimeZone()}
+                </div>
+              </div>
             </td>
           </tr>
         </table>
@@ -2629,9 +2611,9 @@ function testAICoverageCalculation() {
 function generateAICoverageBarChartHtml(aiCoverageMetrics) {
   if (!aiCoverageMetrics || !aiCoverageMetrics.recruiterCoverage || Object.keys(aiCoverageMetrics.recruiterCoverage).length === 0) {
     return `
-      <div style="background-color: #fff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 15px;">
-        <div style="font-weight: bold; font-size: 16px; color: #3f51b5; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee;">📊 AI Interview Coverage by Recruiter (Bar Chart)</div>
-        <div style="text-align: center; padding: 20px; color: #666; font-size: 14px;">No AI coverage data available or no eligible candidates found.</div>
+      <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">📊 AI Interview Coverage by Recruiter</div>
+        <div style="text-align: center; padding: 40px 20px; color: #999; font-size: 13px;">No AI coverage data available.</div>
       </div>
     `;
   }
@@ -2644,15 +2626,15 @@ function generateAICoverageBarChartHtml(aiCoverageMetrics) {
   const maxEligible = Math.max(...sortedRecruiters.map(([, data]) => data.totalEligible));
 
   let chartHtml = `
-    <div style="background-color: #fff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 15px;">
-      <div style="font-weight: bold; font-size: 16px; color: #3f51b5; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee;">📊 AI Interview Coverage by Recruiter (Bar Chart)</div>
-      <p style="font-size: 12px; color: #666; margin-bottom: 15px;">
-        Shows eligible candidates (in specific stages: Hiring Manager Screen, Assessment, Onsite Interview, Final Interview, Offer Approvals, Offer Extended, Offer Declined, Pending Start, Hired; Application_ts ≥ May 1st, 2025) by recruiter. 
-        <span style="color: #4CAF50; font-weight: bold;">Green</span> = AI interview done (Y), 
-        <span style="color: #F44336; font-weight: bold;">Red</span> = AI interview missing (N).
+    <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+      <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">📊 AI Interview Coverage by Recruiter</div>
+      <p style="font-size: 11px; color: #999; margin-bottom: 16px; line-height: 1.5;">
+        Eligible candidates (Application_ts ≥ May 1, 2025). 
+        <span style="color: #4CAF50; font-weight: 600;">Green</span> = Done (Y), 
+        <span style="color: #F44336; font-weight: 600;">Red</span> = Missing (N).
       </p>
       
-      <div style="margin: 20px 0;">
+      <div style="margin: 16px 0;">
   `;
 
   // Generate bars
@@ -2671,18 +2653,18 @@ function generateAICoverageBarChartHtml(aiCoverageMetrics) {
     const displayName = recruiter.length > 20 ? recruiter.substring(0, 17) + '...' : recruiter;
     
     chartHtml += `
-      <div style="margin-bottom: 15px;">
-        <div style="display: flex; align-items: center; margin-bottom: 5px;">
-          <div style="width: 120px; font-size: 12px; font-weight: bold; text-align: right; padding-right: 10px; overflow: hidden; text-overflow: ellipsis;" title="${recruiter}">
+      <div style="margin-bottom: 12px;">
+        <div style="display: flex; align-items: center;">
+          <div style="width: 140px; font-size: 12px; font-weight: 600; color: #1a1a1a; text-align: right; padding-right: 12px; overflow: hidden; text-overflow: ellipsis;" title="${recruiter}">
             ${displayName}
           </div>
           <div style="flex: 1; display: flex; align-items: center;">
-            <div style="width: ${barWidth}px; height: 25px; display: flex; border: 1px solid #ccc; border-radius: 3px; overflow: hidden;">
-              ${aiInterviewsDone > 0 ? `<div style="width: ${doneWidth}px; background-color: #4CAF50; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; font-weight: bold;" title="AI Interview Done: ${aiInterviewsDone}">${aiInterviewsDone}</div>` : ''}
-              ${aiInterviewsMissing > 0 ? `<div style="width: ${missingWidth}px; background-color: #F44336; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; font-weight: bold;" title="AI Interview Missing: ${aiInterviewsMissing}">${aiInterviewsMissing}</div>` : ''}
+            <div style="width: ${barWidth}px; height: 28px; display: flex; border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+              ${aiInterviewsDone > 0 ? `<div style="width: ${doneWidth}px; background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 700;" title="Done: ${aiInterviewsDone}">${aiInterviewsDone}</div>` : ''}
+              ${aiInterviewsMissing > 0 ? `<div style="width: ${missingWidth}px; background: linear-gradient(135deg, #F44336 0%, #d32f2f 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 700;" title="Missing: ${aiInterviewsMissing}">${aiInterviewsMissing}</div>` : ''}
             </div>
-            <div style="margin-left: 10px; font-size: 11px; color: #666; min-width: 80px;">
-              ${data.percentage}% (${aiInterviewsDone}/${totalEligible})
+            <div style="margin-left: 12px; font-size: 11px; color: #667eea; font-weight: 600; min-width: 90px;">
+              ${data.percentage}% <span style="color: #999; font-weight: 400;">(${aiInterviewsDone}/${totalEligible})</span>
             </div>
           </div>
         </div>
@@ -2694,21 +2676,21 @@ function generateAICoverageBarChartHtml(aiCoverageMetrics) {
   chartHtml += `
       </div>
       
-      <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px; font-size: 12px;">
-        <div style="display: flex; align-items: center; margin-right: 20px;">
-          <div style="width: 20px; height: 15px; background-color: #4CAF50; margin-right: 8px; border: 1px solid #ccc;"></div>
-          <span>AI Interview Done (Y)</span>
+      <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid #f0f0f0; font-size: 11px;">
+        <div style="display: flex; align-items: center; margin-right: 24px;">
+          <div style="width: 16px; height: 16px; background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); border-radius: 3px; margin-right: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);"></div>
+          <span style="color: #666; font-weight: 500;">Done (Y)</span>
         </div>
         <div style="display: flex; align-items: center;">
-          <div style="width: 20px; height: 15px; background-color: #F44336; margin-right: 8px; border: 1px solid #ccc;"></div>
-          <span>AI Interview Missing (N)</span>
+          <div style="width: 16px; height: 16px; background: linear-gradient(135deg, #F44336 0%, #d32f2f 100%); border-radius: 3px; margin-right: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);"></div>
+          <span style="color: #666; font-weight: 500;">Missing (N)</span>
         </div>
       </div>
       
-      <p style="font-size: 11px; color: #666; margin-top: 15px; text-align: center;">
-        Total eligible candidates: ${aiCoverageMetrics.totalEligible} | 
-        Total AI interviews done: ${aiCoverageMetrics.totalAIInterviews} | 
-        Overall coverage: <strong>${aiCoverageMetrics.overallPercentage}%</strong>
+      <p style="font-size: 11px; color: #999; margin-top: 16px; text-align: center; padding-top: 12px; border-top: 1px solid #f0f0f0;">
+        Eligible: ${aiCoverageMetrics.totalEligible} • 
+        AI Done: ${aiCoverageMetrics.totalAIInterviews} • 
+        Coverage: <strong style="color: #667eea;">${aiCoverageMetrics.overallPercentage}%</strong>
       </p>
     </div>
   `;
@@ -3094,9 +3076,9 @@ function createAllRecruiterValidationSheets(appRows, appColIndices) {
 function generateValidationSheetsHtml(validationData) {
   if (!validationData || !validationData.validationSheets || Object.keys(validationData.validationSheets).length === 0) {
     return `
-      <div style="background-color: #fff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 15px;">
-        <div style="font-weight: bold; font-size: 16px; color: #3f51b5; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee;">📋 Detailed Validation Sheets</div>
-        <div style="text-align: center; padding: 20px; color: #666; font-size: 14px;">No validation sheets available.</div>
+      <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">📋 Detailed Validation Sheets</div>
+        <div style="text-align: center; padding: 40px 20px; color: #999; font-size: 13px;">No validation sheets available.</div>
       </div>
     `;
   }
@@ -3106,22 +3088,21 @@ function generateValidationSheetsHtml(validationData) {
     .sort(([, a], [, b]) => b.aiMissing - a.aiMissing);
   
   let html = `
-    <div style="background-color: #fff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 15px;">
-      <div style="font-weight: bold; font-size: 16px; color: #3f51b5; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee;">📋 Detailed Validation Sheets</div>
-      <p style="font-size: 12px; color: #666; margin-bottom: 15px;">
-        Click on any recruiter name to view their detailed candidate list with AI interview status. 
-        Sheets show all candidates with Application_ts ≥ May 1st, 2025, sorted by AI interview status.
+    <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+      <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">📋 Detailed Validation Sheets</div>
+      <p style="font-size: 11px; color: #999; margin-bottom: 16px; line-height: 1.5;">
+        Click recruiter name to view detailed candidate list. Application_ts ≥ May 1, 2025.
       </p>
       
-      <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; margin-top: 15px; margin-bottom: 15px; border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden;">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
         <thead>
           <tr>
-            <th style="border: 1px solid #e0e0e0; padding: 8px 12px; text-align: left; font-size: 12px; background-color: #f5f5f5; color: #424242; font-weight: bold;">Recruiter Name</th>
-            <th style="border: 1px solid #e0e0e0; padding: 8px 12px; text-align: center; font-size: 12px; background-color: #f5f5f5; color: #424242; font-weight: bold;">Eligible Candidates</th>
-            <th style="border: 1px solid #e0e0e0; padding: 8px 12px; text-align: center; font-size: 12px; background-color: #f5f5f5; color: #424242; font-weight: bold;">AI Done</th>
-            <th style="border: 1px solid #e0e0e0; padding: 8px 12px; text-align: center; font-size: 12px; background-color: #f5f5f5; color: #424242; font-weight: bold;">AI Missing</th>
-            <th style="border: 1px solid #e0e0e0; padding: 8px 12px; text-align: center; font-size: 12px; background-color: #f5f5f5; color: #424242; font-weight: bold;">Coverage %</th>
-            <th style="border: 1px solid #e0e0e0; padding: 8px 12px; text-align: center; font-size: 12px; background-color: #f5f5f5; color: #424242; font-weight: bold;">Action</th>
+            <th style="padding: 10px 8px; text-align: left; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Recruiter</th>
+            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Eligible</th>
+            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">AI Done</th>
+            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">AI Missing</th>
+            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Coverage</th>
+            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -3134,16 +3115,16 @@ function generateValidationSheetsHtml(validationData) {
     const priorityIcon = missingPercentage > 30 ? '🔴' : missingPercentage > 10 ? '🟡' : '🟢';
     
     html += `
-      <tr style="background-color: ${bgColor};">
-        <td style="border: 1px solid #e0e0e0; padding: 8px 12px; text-align: left; font-size: 12px; font-weight: bold;">
+      <tr>
+        <td style="padding: 12px 8px; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">
           ${priorityIcon} ${recruiterName}
         </td>
-        <td style="border: 1px solid #e0e0e0; padding: 8px 12px; text-align: center; font-size: 12px;">${data.eligible}</td>
-        <td style="border: 1px solid #e0e0e0; padding: 8px 12px; text-align: center; font-size: 12px; color: #4CAF50; font-weight: bold;">${data.aiDone}</td>
-        <td style="border: 1px solid #e0e0e0; padding: 8px 12px; text-align: center; font-size: 12px; color: #F44336; font-weight: bold;">${data.aiMissing}</td>
-        <td style="border: 1px solid #e0e0e0; padding: 8px 12px; text-align: center; font-size: 12px; color: ${coverageColor}; font-weight: bold;">${data.percentage}%</td>
-        <td style="border: 1px solid #e0e0e0; padding: 8px 12px; text-align: center; font-size: 12px;">
-          <a href="${data.url}" target="_blank" style="color: #1976d2; text-decoration: none; font-weight: bold;">📊 View Details</a>
+        <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.eligible}</td>
+        <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #4CAF50; font-weight: 700; border-bottom: 1px solid #f5f5f5;">${data.aiDone}</td>
+        <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #F44336; font-weight: 700; border-bottom: 1px solid #f5f5f5;">${data.aiMissing}</td>
+        <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: ${coverageColor}; font-weight: 700; border-bottom: 1px solid #f5f5f5;">${data.percentage}%</td>
+        <td style="padding: 12px 8px; text-align: center; font-size: 12px; border-bottom: 1px solid #f5f5f5;">
+          <a href="${data.url}" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 600; padding: 4px 12px; background: rgba(102, 126, 234, 0.1); border-radius: 6px; display: inline-block;">View</a>
         </td>
       </tr>
     `;
@@ -3153,10 +3134,10 @@ function generateValidationSheetsHtml(validationData) {
         </tbody>
       </table>
       
-      <p style="font-size: 11px; color: #666; margin-top: 15px; text-align: center;">
-        🔴 High Priority (>30% missing) | 🟡 Medium Priority (10-30% missing) | 🟢 Low Priority (<10% missing)<br>
-        Created ${validationData.successfulSheets} validation sheets successfully.
-        ${validationData.failedRecruiters.length > 0 ? `Failed to create sheets for: ${validationData.failedRecruiters.join(', ')}` : ''}
+      <p style="font-size: 10px; color: #999; margin-top: 16px; padding-top: 12px; border-top: 1px solid #f0f0f0; text-align: center; line-height: 1.6;">
+        🔴 High (>30% missing) | 🟡 Medium (10-30%) | 🟢 Low (<10%)<br>
+        Created ${validationData.successfulSheets} sheets successfully.
+        ${validationData.failedRecruiters.length > 0 ? `<span style="color: #f5576c;">Failed: ${validationData.failedRecruiters.join(', ')}</span>` : ''}
       </p>
     </div>
   `;
