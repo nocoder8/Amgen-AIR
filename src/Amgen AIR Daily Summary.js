@@ -1237,8 +1237,8 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                     <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3); text-align: center;">
                       <div style="font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Completion Rate</div>
                       <div style="font-size: 36px; font-weight: 700; color: #ffffff; line-height: 1;">${metrics.postSept10KpiCompletionRate}<span style="font-size: 20px;">%</span></div>
-                      <div style="font-size: 9px; color: rgba(255,255,255,0.8); margin-top: 6px;">Excl. <48hrs</div>
                     </div>
+                    <div style="text-align: center; font-size: 9px; color: #999; margin-top: 6px;">Excl. <48hrs</div>
                   </td>
                   <td width="25%" style="vertical-align: top; padding: 0;">
                     <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3); text-align: center;">
