@@ -318,10 +318,15 @@ function AIR_DailySummarytoAP() {
     const metrics = calculateCompanyMetricsRB(deduplicatedData, logData.colIndices);
     Logger.log('Successfully calculated company metrics with recruiter breakdown.');
     
-    // 3a. Count feedback from ALL rows (before deduplication) to capture all feedback submissions
-    // This ensures we count all feedback even if there are duplicate Profile_id + Position_id combinations
+    // 3a. Count feedback and pending from ALL rows (before deduplication) to capture all submissions
+    // This ensures we count all feedback and pending even if there are duplicate Profile_id + Position_id combinations
     countFeedbackFromAllRows(finalFilteredData, logData.colIndices, metrics);
-    Logger.log('Successfully counted feedback from all rows (including duplicates).');
+    Logger.log('Successfully counted feedback and pending from all rows (including duplicates).');
+    
+    // 3b. Recalculate "sent" counts from deduplicated data to ensure consistency
+    // This ensures "sent" matches the deduplicated row count (excluding duplicates)
+    recalculateSentFromDeduplicatedData(deduplicatedData, logData.colIndices, metrics);
+    Logger.log('Successfully recalculated sent counts from deduplicated data.');
     // Logger.log(`Calculated Metrics: ${JSON.stringify(metrics)}`); // Optional: Log detailed metrics
 
     // 4. Create HTML Report (Uses RB creator) - Pass adoption, activity data, and log creator index
@@ -432,6 +437,67 @@ function countFeedbackFromAllRows(allRows, colIndices, metrics) {
   });
   
   Logger.log(`Counted feedback from all rows: ${metrics.totalFeedbackSubmitted} total feedback submissions`);
+}
+
+/**
+ * Recalculates "sent" counts from deduplicated data to ensure consistency.
+ * This ensures "sent" matches the deduplicated row count (excluding duplicates).
+ * @param {Array<Array>} deduplicatedRows Deduplicated rows
+ * @param {object} colIndices Column indices object
+ * @param {object} metrics Metrics object to update
+ */
+function recalculateSentFromDeduplicatedData(deduplicatedRows, colIndices, metrics) {
+  const recruiterIdx = colIndices.hasOwnProperty('Recruiter_name') ? colIndices['Recruiter_name'] : -1;
+  const creatorIdx = colIndices.hasOwnProperty('Creator_user_id') ? colIndices['Creator_user_id'] : -1;
+  const jobFuncIdx = colIndices.hasOwnProperty('Job_function') ? colIndices['Job_function'] : -1;
+  const countryIdx = colIndices.hasOwnProperty('Location_country') ? colIndices['Location_country'] : -1;
+  
+  // Reset all sent counts
+  Object.keys(metrics.byRecruiter).forEach(rec => {
+    metrics.byRecruiter[rec].sent = 0;
+  });
+  Object.keys(metrics.byCreator).forEach(crt => {
+    metrics.byCreator[crt].sent = 0;
+  });
+  Object.keys(metrics.byJobFunction).forEach(jf => {
+    metrics.byJobFunction[jf].sent = 0;
+  });
+  Object.keys(metrics.byCountry).forEach(ctry => {
+    metrics.byCountry[ctry].sent = 0;
+  });
+  
+  // Recalculate sent from deduplicated data
+  deduplicatedRows.forEach(row => {
+    const recruiter = (recruiterIdx !== -1 && row.length > recruiterIdx && row[recruiterIdx]) ? String(row[recruiterIdx]).trim() : 'Unknown';
+    const creator = (creatorIdx !== -1 && row.length > creatorIdx && row[creatorIdx]) ? String(row[creatorIdx]).trim() : 'Unknown';
+    const jobFunc = (jobFuncIdx !== -1 && row.length > jobFuncIdx && row[jobFuncIdx]) ? String(row[jobFuncIdx]).trim() : 'Unknown';
+    const country = (countryIdx !== -1 && row.length > countryIdx && row[countryIdx]) ? String(row[countryIdx]).trim() : 'Unknown';
+    
+    // Initialize if needed
+    if (!metrics.byRecruiter[recruiter]) {
+      metrics.byRecruiter[recruiter] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, recruiterSubmissionAwaited: 0, statusCounts: {} };
+    }
+    if (!metrics.byCreator[creator]) {
+      metrics.byCreator[creator] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, recruiterSubmissionAwaited: 0, statusCounts: {} };
+    }
+    if (!metrics.byJobFunction[jobFunc]) {
+      metrics.byJobFunction[jobFunc] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, recruiterSubmissionAwaited: 0, statusCounts: {} };
+    }
+    if (!metrics.byCountry[country]) {
+      metrics.byCountry[country] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, statusCounts: {} };
+    }
+    
+    // Increment sent counts from deduplicated data
+    metrics.byRecruiter[recruiter].sent++;
+    metrics.byCreator[creator].sent++;
+    metrics.byJobFunction[jobFunc].sent++;
+    metrics.byCountry[country].sent++;
+  });
+  
+  // Update totalSent to match deduplicated count
+  metrics.totalSent = deduplicatedRows.length;
+  
+  Logger.log(`Recalculated sent counts from deduplicated data: ${metrics.totalSent} total sent (after deduplication)`);
 }
 
 /**
