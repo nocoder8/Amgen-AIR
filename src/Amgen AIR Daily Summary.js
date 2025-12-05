@@ -3147,7 +3147,7 @@ function testRecruiterFeedbackCount() {
     Logger.log(`=== Testing Feedback Count for Thulan Kumar ===`);
     
     // Get raw log data
-    const logData = getLogDataRB();
+    const logData = getLogSheetDataRB();
     if (!logData || !logData.rows || logData.rows.length === 0) {
       Logger.log(`ERROR: Could not get log data`);
       return;
