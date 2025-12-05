@@ -1,0 +1,25 @@
+Formula to convert UTC timestamp to IST (Indian Standard Time):
+
+=IF(AND(ISNUMBER(M2), M2<>""), 
+   TEXT(M2 + 5.5/24, "yyyy-mm-dd hh:mm:ss"),
+   "")
+
+Explanation:
+- M2 is Schedule_start_time (already in UTC)
+- IST is UTC+5:30, so we ADD 5.5 hours (5.5/24 days)
+- Output format: "yyyy-mm-dd hh:mm:ss"
+
+If you want a more readable format:
+=IF(AND(ISNUMBER(M2), M2<>""), 
+   TEXT(M2 + 5.5/24, "dd-mmm-yyyy hh:mm AM/PM"),
+   "")
+
+Or if you want to keep it as a datetime value (not text):
+=IF(AND(ISNUMBER(M2), M2<>""), 
+   M2 + 5.5/24,
+   "")
+
+Example:
+- Input (UTC): 2025-12-07 03:30:00
+- Output (IST): 2025-12-07 09:00:00 (3:30 AM UTC + 5.5 hours = 9:00 AM IST)
+
