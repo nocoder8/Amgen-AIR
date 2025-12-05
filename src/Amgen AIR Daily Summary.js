@@ -784,6 +784,14 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
   const scheduledAtIdx = colIndices.hasOwnProperty('Schedule_start_time') ? colIndices['Schedule_start_time'] : -1;
   const candidateNameIdx = colIndices.hasOwnProperty('Candidate_name') ? colIndices['Candidate_name'] : -1;
   const feedbackStatusIdx = colIndices.hasOwnProperty('Feedback_status') ? colIndices['Feedback_status'] : -1;
+  
+  // Debug: Log Feedback_status column status and collect unique values
+  const uniqueFeedbackStatuses = new Set();
+  if (feedbackStatusIdx === -1) {
+    Logger.log('WARNING: Feedback_status column not found in sheet');
+  } else {
+    Logger.log(`Feedback_status column found at index: ${feedbackStatusIdx}`);
+  }
   const durationIdx = colIndices.hasOwnProperty('Duration_minutes') ? colIndices['Duration_minutes'] : -1;
   const matchStarsIdx = colIndices.hasOwnProperty('Match_stars') ? colIndices['Match_stars'] : -1;
   const jobFuncIdx = colIndices.hasOwnProperty('Job_function') ? colIndices['Job_function'] : -1;
@@ -919,13 +927,22 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
            }
        }
 
-       // --- Check for Feedback Submitted (only if completed) ---
-       if (feedbackStatusIdx !== -1 && feedbackStatusRaw === FEEDBACK_SUBMITTED_STATUS) {
+       // --- Check for Feedback Submitted (case-insensitive match) ---
+       // Match "SUBMITTED" (or any case variation like "Submitted", "submitted")
+       const feedbackStatusNormalized = feedbackStatusRaw.toLowerCase().trim();
+       const isFeedbackSubmitted = feedbackStatusNormalized === 'submitted';
+       
+       if (feedbackStatusIdx !== -1 && isFeedbackSubmitted) {
          metrics.totalFeedbackSubmitted++;
          metrics.byJobFunction[jobFunc].feedbackSubmitted++;
          metrics.byCountry[country].feedbackSubmitted++;
          metrics.byRecruiter[recruiter].feedbackSubmitted++; // <<< INCREMENT Recruiter Feedback Submitted
          metrics.byCreator[creator].feedbackSubmitted++; // <<< INCREMENT Creator Feedback Submitted
+       }
+       
+       // Collect unique feedback status values for debugging
+       if (feedbackStatusIdx !== -1 && feedbackStatusRaw) {
+         uniqueFeedbackStatuses.add(feedbackStatusRaw);
        }
 
        // --- Check for Recruiter Submission Awaited (AI_RECOMMENDED in Feedback_status)
@@ -937,6 +954,12 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
        }
     }
   });
+
+  // Debug: Log all unique feedback status values found
+  if (feedbackStatusIdx !== -1) {
+    Logger.log(`Found ${uniqueFeedbackStatuses.size} unique Feedback_status values: ${Array.from(uniqueFeedbackStatuses).join(', ')}`);
+    Logger.log(`Total feedback submitted count: ${metrics.totalFeedbackSubmitted}`);
+  }
 
   // --- Calculate Final Rates and Averages ---
 
