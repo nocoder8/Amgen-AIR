@@ -1097,7 +1097,7 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
 
 /**
  * Generates the HTML for the table rows of the Recruiter Breakdown section.
- * Sorts recruiters by 'Sent' count descending and adds medals.
+ * Sorts recruiters by 'Sent' count descending.
  * @param {object} recruiterData The metrics.byRecruiter object.
  * @returns {string} HTML string for the table body rows.
  */
@@ -1114,24 +1114,13 @@ function generateRecruiterTableRowsHtml(recruiterData) {
             return dataB.sent - dataA.sent;
         });
 
-    // Create a map for medals for the top 3 (excluding Unknown)
-    const medals = ['🥇', '🥈', '🥉'];
-    const recruiterMedalMap = {};
-    sortedRecruiters
-        .filter(([rec]) => rec !== 'Unknown')
-        .slice(0, 3)
-        .forEach(([rec], index) => {
-            recruiterMedalMap[rec] = medals[index];
-        });
-
     // Generate table rows HTML
     return sortedRecruiters
         .map(([rec, data], index) => {
-            const medal = recruiterMedalMap[rec] || ''; // Get medal or empty string
             const bgColor = index % 2 === 0 ? '#fafafa' : '#ffffff';
             return `
                 <tr style="background-color: ${bgColor};">
-                    <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: left; font-size: 12px; vertical-align: middle; font-weight: bold; width: 180px;">${medal}${medal ? ' ' : ''}${rec}</td>
+                    <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: left; font-size: 12px; vertical-align: middle; font-weight: bold; width: 180px;">${rec}</td>
                     <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.sent}</td>
                     <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.completedNumber} (<span style="color: #0056b3;">${data.completedPercentOfSent}%</span>)</td>
                     <td style="border: 1px solid #e0e0e0; padding: 6px 10px; text-align: center; font-size: 12px; vertical-align: middle;">${data.scheduled}</td>
@@ -1319,23 +1308,12 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                                     return dataB.sent - dataA.sent;
                                 });
 
-                            // Create a map for medals for the top 3 (excluding Unknown)
-                            const medals = ['🥇', '🥈', '🥉'];
-                            const recruiterMedalMap = {};
-                            sortedRecruiters
-                                .filter(([rec]) => rec !== 'Unknown')
-                                .slice(0, 3)
-                                .forEach(([rec], index) => {
-                                    recruiterMedalMap[rec] = medals[index];
-                                });
-
                             // Generate table rows
                             return sortedRecruiters
                              .map(([rec, data], index) => {
-                                const medal = recruiterMedalMap[rec] || ''; // Get medal or empty string
                                 return `
                                   <tr>
-                                     <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${medal}${medal ? ' ' : ''}${rec}</td>
+                                     <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${rec}</td>
                                       <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.sent}</td>
                                       <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.completedNumber} <span style="color: #667eea; font-size: 11px;">${data.completedPercentOfSent}%</span></td>
                                       <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.scheduled}</td>
@@ -1386,23 +1364,12 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                                     return dataB.sent - dataA.sent;
                                 });
 
-                            // Create a map for medals for the top 3 (excluding Unknown)
-                            const medals = ['🥇', '🥈', '🥉'];
-                            const creatorMedalMap = {};
-                            sortedCreators
-                                .filter(([crt]) => crt !== 'Unknown')
-                                .slice(0, 3)
-                                .forEach(([crt], index) => {
-                                    creatorMedalMap[crt] = medals[index];
-                                });
-
                             // Generate table rows
                             return sortedCreators
                              .map(([crt, data], index) => {
-                                const medal = creatorMedalMap[crt] || ''; // Get medal or empty string
                                 return `
                                   <tr>
-                                     <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${medal}${medal ? ' ' : ''}${crt}</td>
+                                     <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${crt}</td>
                                       <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.sent}</td>
                                       <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.completedNumber} <span style="color: #667eea; font-size: 11px;">${data.completedPercentOfSent}%</span></td>
                                       <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.scheduled}</td>
