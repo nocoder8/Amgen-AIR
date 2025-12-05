@@ -269,12 +269,33 @@ function AIR_DailySummarytoAP() {
 
         const uniqueKey = `${profileId}_${positionId}`;
         const currentRank = vsGetStatusRankRB(status); // Use RB helper
+        
+        // Check if current row has SUBMITTED feedback
+        const feedbackStatusIdx = logData.colIndices.hasOwnProperty('Feedback_status') ? logData.colIndices['Feedback_status'] : -1;
+        const currentFeedbackStatus = (feedbackStatusIdx !== -1 && row[feedbackStatusIdx]) ? String(row[feedbackStatusIdx]).trim().toUpperCase() : '';
+        const hasSubmittedFeedback = currentFeedbackStatus === 'SUBMITTED';
 
-        if (!groupedData[uniqueKey] || currentRank < groupedData[uniqueKey].bestRank) {
-            // If no entry exists OR current row has a better (lower) rank, store/replace it
-            groupedData[uniqueKey] = { bestRank: currentRank, row: row };
+        if (!groupedData[uniqueKey]) {
+            // First row for this key - store it
+            groupedData[uniqueKey] = { bestRank: currentRank, row: row, hasSubmittedFeedback: hasSubmittedFeedback };
+        } else {
+            const existing = groupedData[uniqueKey];
+            const existingFeedbackStatus = (feedbackStatusIdx !== -1 && existing.row[feedbackStatusIdx]) ? String(existing.row[feedbackStatusIdx]).trim().toUpperCase() : '';
+            const existingHasSubmitted = existingFeedbackStatus === 'SUBMITTED';
+            
+            // Priority: Keep row with SUBMITTED feedback if either has it, otherwise keep better status
+            if (hasSubmittedFeedback && !existingHasSubmitted) {
+                // Current row has SUBMITTED, existing doesn't - prefer current
+                groupedData[uniqueKey] = { bestRank: currentRank, row: row, hasSubmittedFeedback: true };
+            } else if (!hasSubmittedFeedback && existingHasSubmitted) {
+                // Existing has SUBMITTED, current doesn't - keep existing
+                // Do nothing, keep existing row
+            } else if (currentRank < existing.bestRank) {
+                // Both have same feedback status, prefer better status rank
+                groupedData[uniqueKey] = { bestRank: currentRank, row: row, hasSubmittedFeedback: hasSubmittedFeedback };
+            }
+            // Otherwise keep existing row
         }
-        // If an entry exists and current rank is not better, do nothing (keep the existing better row)
     });
 
     if (skippedRowCount > 0) {
@@ -3273,8 +3294,30 @@ function testRecruiterFeedbackCount() {
       const key = `${profileId}_${positionId}`;
       const statusRank = getStatusRank(status);
       
-      if (!groupedData[key] || statusRank < groupedData[key].bestRank) {
-        groupedData[key] = { bestRank: statusRank, row: row };
+      // Check if current row has SUBMITTED feedback
+      const currentFeedbackStatus = (row.length > feedbackStatusIdx && row[feedbackStatusIdx]) ? String(row[feedbackStatusIdx]).trim().toUpperCase() : '';
+      const hasSubmittedFeedback = currentFeedbackStatus === 'SUBMITTED';
+      
+      if (!groupedData[key]) {
+        // First row for this key - store it
+        groupedData[key] = { bestRank: statusRank, row: row, hasSubmittedFeedback: hasSubmittedFeedback };
+      } else {
+        const existing = groupedData[key];
+        const existingFeedbackStatus = (existing.row.length > feedbackStatusIdx && existing.row[feedbackStatusIdx]) ? String(existing.row[feedbackStatusIdx]).trim().toUpperCase() : '';
+        const existingHasSubmitted = existingFeedbackStatus === 'SUBMITTED';
+        
+        // Priority: Keep row with SUBMITTED feedback if either has it, otherwise keep better status
+        if (hasSubmittedFeedback && !existingHasSubmitted) {
+          // Current row has SUBMITTED, existing doesn't - prefer current
+          groupedData[key] = { bestRank: statusRank, row: row, hasSubmittedFeedback: true };
+        } else if (!hasSubmittedFeedback && existingHasSubmitted) {
+          // Existing has SUBMITTED, current doesn't - keep existing
+          // Do nothing, keep existing row
+        } else if (statusRank < existing.bestRank) {
+          // Both have same feedback status, prefer better status rank
+          groupedData[key] = { bestRank: statusRank, row: row, hasSubmittedFeedback: hasSubmittedFeedback };
+        }
+        // Otherwise keep existing row
       }
     });
     
