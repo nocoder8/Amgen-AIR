@@ -335,7 +335,7 @@ function AIR_DailySummarytoAP() {
 
     // 5. Send Email (Uses RB functions/config)
     // Set static subject line for this specific report
-    const reportTitle = `AI Recruiter Adoption: Daily Summary`; // <<< Renamed Subject
+    const reportTitle = `AI Interviewer adoption at Amgen: Weekly Summary`; // <<< Renamed Subject
     sendVsEmailRB(VS_EMAIL_RECIPIENT_RB, VS_EMAIL_CC_RB, reportTitle, htmlContent);
 
     Logger.log(`--- AI Recruiter Adoption: Daily Summary generated and sent successfully! ---`); // Updated log message
