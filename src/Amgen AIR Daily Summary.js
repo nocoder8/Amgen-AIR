@@ -3137,6 +3137,215 @@ function generateValidationSheetsHtml(validationData) {
 /**
  * Comprehensive test function for validation sheet functionality
  */
+/**
+ * Test function to debug feedback count for a specific recruiter
+ * Tests: Thulan Kumar
+ * Expected: 33 rows with Feedback_status = SUBMITTED
+ */
+function testRecruiterFeedbackCount() {
+  try {
+    Logger.log(`=== Testing Feedback Count for Thulan Kumar ===`);
+    
+    // Get raw log data
+    const logData = getLogDataRB();
+    if (!logData || !logData.rows || logData.rows.length === 0) {
+      Logger.log(`ERROR: Could not get log data`);
+      return;
+    }
+    
+    Logger.log(`Total rows in log sheet: ${logData.rows.length}`);
+    
+    // Get column indices
+    const recruiterIdx = logData.colIndices.hasOwnProperty('Recruiter_name') ? logData.colIndices['Recruiter_name'] : -1;
+    const feedbackStatusIdx = logData.colIndices.hasOwnProperty('Feedback_status') ? logData.colIndices['Feedback_status'] : -1;
+    const profileIdIdx = logData.colIndices['Profile_id'];
+    const positionIdIdx = logData.colIndices['Position_id'];
+    const statusIdx = logData.colIndices['STATUS_COLUMN'];
+    
+    Logger.log(`Column indices - Recruiter_name: ${recruiterIdx}, Feedback_status: ${feedbackStatusIdx}, Profile_id: ${profileIdIdx}, Position_id: ${positionIdIdx}`);
+    
+    if (recruiterIdx === -1) {
+      Logger.log(`ERROR: Recruiter_name column not found`);
+      return;
+    }
+    
+    if (feedbackStatusIdx === -1) {
+      Logger.log(`ERROR: Feedback_status column not found`);
+      return;
+    }
+    
+    // Step 1: Count raw rows for Thulan Kumar with SUBMITTED
+    let rawCount = 0;
+    let rawRows = [];
+    logData.rows.forEach((row, index) => {
+      if (row.length > recruiterIdx && row.length > feedbackStatusIdx) {
+        const recruiter = row[recruiterIdx] ? String(row[recruiterIdx]).trim() : '';
+        const feedbackStatus = row[feedbackStatusIdx] ? String(row[feedbackStatusIdx]).trim() : '';
+        
+        if (recruiter === 'Thulan Kumar' && feedbackStatus.toUpperCase() === 'SUBMITTED') {
+          rawCount++;
+          rawRows.push({ rowIndex: index, profileId: row[profileIdIdx], positionId: row[positionIdIdx], status: row[statusIdx] });
+        }
+      }
+    });
+    
+    Logger.log(`\nStep 1 - Raw count (Thulan Kumar + SUBMITTED): ${rawCount}`);
+    Logger.log(`Sample rows: ${JSON.stringify(rawRows.slice(0, 5))}`);
+    
+    // Step 2: After time range filter
+    const filteredData = filterDataByTimeRangeRB(logData.rows, logData.colIndices);
+    let timeFilteredCount = 0;
+    filteredData.forEach(row => {
+      if (row.length > recruiterIdx && row.length > feedbackStatusIdx) {
+        const recruiter = row[recruiterIdx] ? String(row[recruiterIdx]).trim() : '';
+        const feedbackStatus = row[feedbackStatusIdx] ? String(row[feedbackStatusIdx]).trim() : '';
+        if (recruiter === 'Thulan Kumar' && feedbackStatus.toUpperCase() === 'SUBMITTED') {
+          timeFilteredCount++;
+        }
+      }
+    });
+    Logger.log(`\nStep 2 - After time range filter: ${timeFilteredCount}`);
+    
+    // Step 3: After template filter
+    const feedbackTemplateIndex = logData.colIndices.hasOwnProperty('Feedback_template_name') ? logData.colIndices['Feedback_template_name'] : -1;
+    const excludedTemplates = ["AI Coding Interview Metrics Feedback Form", "AI Functional Interview Feedback Form"];
+    let templateFilteredData = filteredData;
+    if (feedbackTemplateIndex !== -1) {
+      templateFilteredData = filteredData.filter(row => {
+        if (row.length <= feedbackTemplateIndex) return true;
+        const templateName = row[feedbackTemplateIndex] ? String(row[feedbackTemplateIndex]).trim() : '';
+        return !excludedTemplates.includes(templateName);
+      });
+    }
+    
+    let templateFilteredCount = 0;
+    templateFilteredData.forEach(row => {
+      if (row.length > recruiterIdx && row.length > feedbackStatusIdx) {
+        const recruiter = row[recruiterIdx] ? String(row[recruiterIdx]).trim() : '';
+        const feedbackStatus = row[feedbackStatusIdx] ? String(row[feedbackStatusIdx]).trim() : '';
+        if (recruiter === 'Thulan Kumar' && feedbackStatus.toUpperCase() === 'SUBMITTED') {
+          templateFilteredCount++;
+        }
+      }
+    });
+    Logger.log(`\nStep 3 - After template filter: ${templateFilteredCount}`);
+    
+    // Step 4: After position filter
+    const positionNameIndex = logData.colIndices.hasOwnProperty('Position_name') ? logData.colIndices['Position_name'] : -1;
+    const positionToExclude = "AIR Testing";
+    let finalFilteredData = templateFilteredData;
+    if (positionNameIndex !== -1) {
+      finalFilteredData = templateFilteredData.filter(row => {
+        return !(row.length > positionNameIndex && row[positionNameIndex] === positionToExclude);
+      });
+    }
+    
+    let positionFilteredCount = 0;
+    finalFilteredData.forEach(row => {
+      if (row.length > recruiterIdx && row.length > feedbackStatusIdx) {
+        const recruiter = row[recruiterIdx] ? String(row[recruiterIdx]).trim() : '';
+        const feedbackStatus = row[feedbackStatusIdx] ? String(row[feedbackStatusIdx]).trim() : '';
+        if (recruiter === 'Thulan Kumar' && feedbackStatus.toUpperCase() === 'SUBMITTED') {
+          positionFilteredCount++;
+        }
+      }
+    });
+    Logger.log(`\nStep 4 - After position filter: ${positionFilteredCount}`);
+    
+    // Step 5: After deduplication
+    const groupedData = {};
+    let skippedRowCount = 0;
+    
+    finalFilteredData.forEach(row => {
+      if (!row || row.length <= profileIdIdx || row.length <= positionIdIdx || row.length <= statusIdx) {
+        skippedRowCount++;
+        return;
+      }
+      const profileId = row[profileIdIdx];
+      const positionId = row[positionIdIdx];
+      const status = row[statusIdx] ? String(row[statusIdx]).trim() : 'Unknown';
+      
+      if (!profileId || !positionId) {
+        skippedRowCount++;
+        return;
+      }
+      
+      const key = `${profileId}_${positionId}`;
+      const statusRank = getStatusRank(status);
+      
+      if (!groupedData[key] || statusRank < groupedData[key].bestRank) {
+        groupedData[key] = { bestRank: statusRank, row: row };
+      }
+    });
+    
+    const deduplicatedRows = Object.values(groupedData).map(item => item.row);
+    
+    let deduplicatedCount = 0;
+    let duplicateDetails = [];
+    deduplicatedRows.forEach(row => {
+      if (row.length > recruiterIdx && row.length > feedbackStatusIdx) {
+        const recruiter = row[recruiterIdx] ? String(row[recruiterIdx]).trim() : '';
+        const feedbackStatus = row[feedbackStatusIdx] ? String(row[feedbackStatusIdx]).trim() : '';
+        if (recruiter === 'Thulan Kumar' && feedbackStatus.toUpperCase() === 'SUBMITTED') {
+          deduplicatedCount++;
+          const key = `${row[profileIdIdx]}_${row[positionIdIdx]}`;
+          duplicateDetails.push({ profileId: row[profileIdIdx], positionId: row[positionIdIdx], status: row[statusIdx] });
+        }
+      }
+    });
+    
+    Logger.log(`\nStep 5 - After deduplication: ${deduplicatedCount}`);
+    Logger.log(`Skipped rows during deduplication: ${skippedRowCount}`);
+    
+    // Check for duplicates that might have been removed
+    const duplicateKeys = new Set();
+    const allKeys = [];
+    finalFilteredData.forEach(row => {
+      if (row.length > recruiterIdx && row.length > feedbackStatusIdx) {
+        const recruiter = row[recruiterIdx] ? String(row[recruiterIdx]).trim() : '';
+        const feedbackStatus = row[feedbackStatusIdx] ? String(row[feedbackStatusIdx]).trim() : '';
+        if (recruiter === 'Thulan Kumar' && feedbackStatus.toUpperCase() === 'SUBMITTED') {
+          if (row.length > profileIdIdx && row.length > positionIdIdx) {
+            const key = `${row[profileIdIdx]}_${row[positionIdIdx]}`;
+            allKeys.push(key);
+            if (allKeys.filter(k => k === key).length > 1) {
+              duplicateKeys.add(key);
+            }
+          }
+        }
+      }
+    });
+    
+    Logger.log(`\nDuplicate Profile_id + Position_id combinations found: ${duplicateKeys.size}`);
+    if (duplicateKeys.size > 0) {
+      Logger.log(`Duplicate keys: ${Array.from(duplicateKeys).slice(0, 10).join(', ')}`);
+    }
+    
+    // Final summary
+    Logger.log(`\n=== SUMMARY ===`);
+    Logger.log(`Expected count: 33`);
+    Logger.log(`Raw count: ${rawCount}`);
+    Logger.log(`After time filter: ${timeFilteredCount}`);
+    Logger.log(`After template filter: ${templateFilteredCount}`);
+    Logger.log(`After position filter: ${positionFilteredCount}`);
+    Logger.log(`After deduplication (FINAL): ${deduplicatedCount}`);
+    Logger.log(`Difference: ${positionFilteredCount - deduplicatedCount} rows lost in deduplication`);
+    
+  } catch (error) {
+    Logger.log(`ERROR in test: ${error.toString()}`);
+    Logger.log(`Stack: ${error.stack}`);
+  }
+}
+
+// Helper function to get status rank (same as in main code)
+function getStatusRank(status) {
+  const statusUpper = status.toUpperCase();
+  if (statusUpper === 'COMPLETED') return 1;
+  if (statusUpper === 'SCHEDULED') return 2;
+  if (statusUpper === 'PENDING' || statusUpper === 'INVITED' || statusUpper === 'EMAIL SENT') return 3;
+  return 99; // Other statuses get lower priority
+}
+
 function testValidationSheetFunctionality() {
   try {
     Logger.log(`--- Testing Complete Validation Sheet Functionality ---`);
