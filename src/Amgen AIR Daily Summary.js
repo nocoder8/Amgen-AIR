@@ -1255,7 +1255,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                 <tr>
                   <td width="50%" style="vertical-align: top; padding: 0;">
                     <div style="background: #ffffff; padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                      <div style="font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 12px; letter-spacing: -0.2px;">📊 Completion Status</div>
+                      <div style="font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 12px; letter-spacing: -0.2px;">Completion Status</div>
                       <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
                          <thead><tr><th style="padding: 8px; text-align: left; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Status</th><th style="padding: 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Count</th><th style="padding: 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">%</th></tr></thead>
                          <tbody>
@@ -1272,7 +1272,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                   </td>
                   <td width="50%" style="vertical-align: top; padding: 0;">
                      <div style="background: #ffffff; padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                       <div style="font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 12px; letter-spacing: -0.2px;">🗓️ Daily Invitations (7d)</div>
+                       <div style="font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 12px; letter-spacing: -0.2px;">Daily Invitations (7d)</div>
                        ${generateTimeseriesTable(metrics.dailySentCounts)}
                     </div>
                   </td>
@@ -1285,7 +1285,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
           <tr>
             <td style="padding-top: 10px; padding-bottom: 10px;">
               <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 16px;">
-                 <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">🧑‍💼 Breakdown by Recruiter of the Position</div>
+                 <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">Breakdown by Recruiter of the Position</div>
                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
              <thead>
                 <tr>
@@ -1341,7 +1341,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
           <tr>
             <td style="padding: 0 24px 24px;">
               <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                 <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">👤 Breakdown by Creator</div>
+                 <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">Breakdown by Creator</div>
                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
              <thead>
                 <tr>
@@ -1404,7 +1404,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
           <tr>
             <td style="padding: 0 24px 24px;">
               <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">📊 AI Interview Coverage by Recruiter</div>
+                <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">AI Interview Coverage by Recruiter</div>
                 <div style="text-align: center; padding: 60px 20px; color: #999; font-size: 14px; font-weight: 500;">Coming soon</div>
               </div>
             </td>
@@ -1422,7 +1422,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
           <tr>
             <td style="padding: 0 24px 24px;">
               <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">📋 Detailed Validation Sheets</div>
+                <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">Detailed Validation Sheets</div>
                 <div style="text-align: center; padding: 60px 20px; color: #999; font-size: 14px; font-weight: 500;">Coming soon</div>
               </div>
             </td>
@@ -1433,7 +1433,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
           <tr>
             <td style="padding: 0 24px 24px;">
               <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">⏱️ Creator Last Invite Activity</div>
+                <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">Creator Last Invite Activity</div>
                 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
                   <thead>
                     <tr>
@@ -1480,7 +1480,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
           <tr>
              <td style="padding: 0 24px 24px;">
                <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                  <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">💼 Breakdown by Job Function</div>
+                  <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">Breakdown by Job Function</div>
                   <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
              <thead>
                 <tr>
@@ -1522,7 +1522,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
            <tr>
              <td style="padding: 0 24px 24px;">
                <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                  <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">🌍 Breakdown by Location Country</div>
+                  <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">Breakdown by Location Country</div>
                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
              <thead>
                 <tr>
@@ -3102,12 +3102,11 @@ function generateValidationSheetsHtml(validationData) {
     const bgColor = index % 2 === 0 ? '#fafafa' : '#ffffff';
     const coverageColor = data.percentage >= 80 ? '#4CAF50' : data.percentage >= 60 ? '#FF9800' : '#F44336';
     const missingPercentage = 100 - data.percentage;
-    const priorityIcon = missingPercentage > 30 ? '🔴' : missingPercentage > 10 ? '🟡' : '🟢';
     
     html += `
       <tr>
         <td style="padding: 12px 8px; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">
-          ${priorityIcon} ${recruiterName}
+          ${recruiterName}
         </td>
         <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.eligible}</td>
         <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #4CAF50; font-weight: 700; border-bottom: 1px solid #f5f5f5;">${data.aiDone}</td>
@@ -3125,7 +3124,7 @@ function generateValidationSheetsHtml(validationData) {
       </table>
       
       <p style="font-size: 10px; color: #999; margin-top: 16px; padding-top: 12px; border-top: 1px solid #f0f0f0; text-align: center; line-height: 1.6;">
-        🔴 High (>30% missing) | 🟡 Medium (10-30%) | 🟢 Low (<10%)<br>
+        High (>30% missing) | Medium (10-30%) | Low (<10%)<br>
         Created ${validationData.successfulSheets} sheets successfully.
         ${validationData.failedRecruiters.length > 0 ? `<span style="color: #f5576c;">Failed: ${validationData.failedRecruiters.join(', ')}</span>` : ''}
       </p>
