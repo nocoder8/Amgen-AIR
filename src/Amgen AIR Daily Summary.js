@@ -3240,9 +3240,10 @@ function generateValidationSheetsHtml(validationData) {
  * Comprehensive test function for validation sheet functionality
  */
 /**
- * Test function to debug feedback count for a specific recruiter
+ * Test function to debug feedback and pending counts for a specific recruiter
  * Tests: Thulan Kumar
  * Expected: 33 rows with Feedback_status = SUBMITTED
+ * Checks: Pending count based on status vs Feedback_status = REQUESTED
  */
 function testRecruiterFeedbackCount() {
   try {
@@ -3480,15 +3481,87 @@ function testRecruiterFeedbackCount() {
       });
     }
     
+    // PENDING COUNT ANALYSIS
+    Logger.log(`\n=== PENDING COUNT ANALYSIS FOR THULAN KUMAR ===`);
+    
+    const PENDING_STATUSES = ['PENDING', 'INVITED', 'EMAIL SENT'];
+    
+    // Count rows with Feedback_status = REQUESTED
+    let requestedFeedbackCount = 0;
+    let requestedRows = [];
+    finalFilteredData.forEach(row => {
+      if (row.length > recruiterIdx && row.length > feedbackStatusIdx) {
+        const recruiter = row[recruiterIdx] ? String(row[recruiterIdx]).trim() : '';
+        const feedbackStatus = row[feedbackStatusIdx] ? String(row[feedbackStatusIdx]).trim().toUpperCase() : '';
+        if (recruiter === 'Thulan Kumar' && feedbackStatus === 'REQUESTED') {
+          requestedFeedbackCount++;
+          const status = row.length > statusIdx ? String(row[statusIdx]).trim() : '';
+          requestedRows.push({ status: status, profileId: row[profileIdIdx], positionId: row[positionIdIdx] });
+        }
+      }
+    });
+    Logger.log(`Rows with Feedback_status = REQUESTED (before deduplication): ${requestedFeedbackCount}`);
+    
+    // Count rows with status = PENDING/INVITED/EMAIL SENT
+    let pendingByStatusCount = 0;
+    finalFilteredData.forEach(row => {
+      if (row.length > recruiterIdx && row.length > statusIdx) {
+        const recruiter = row[recruiterIdx] ? String(row[recruiterIdx]).trim() : '';
+        const status = String(row[statusIdx]).trim();
+        if (recruiter === 'Thulan Kumar' && PENDING_STATUSES.includes(status)) {
+          pendingByStatusCount++;
+        }
+      }
+    });
+    Logger.log(`Rows with status in [PENDING, INVITED, EMAIL SENT] (before deduplication): ${pendingByStatusCount}`);
+    
+    // Count after deduplication
+    let deduplicatedPendingCount = 0;
+    deduplicatedRows.forEach(row => {
+      if (row.length > recruiterIdx && row.length > statusIdx) {
+        const recruiter = row[recruiterIdx] ? String(row[recruiterIdx]).trim() : '';
+        const status = String(row[statusIdx]).trim();
+        if (recruiter === 'Thulan Kumar' && PENDING_STATUSES.includes(status)) {
+          deduplicatedPendingCount++;
+        }
+      }
+    });
+    Logger.log(`Rows with status in [PENDING, INVITED, EMAIL SENT] (after deduplication): ${deduplicatedPendingCount}`);
+    
+    // Analyze REQUESTED feedback rows
+    let requestedWithPendingStatus = 0;
+    let requestedWithOtherStatus = [];
+    requestedRows.forEach(r => {
+      if (PENDING_STATUSES.includes(r.status)) {
+        requestedWithPendingStatus++;
+      } else {
+        requestedWithOtherStatus.push(r.status);
+      }
+    });
+    Logger.log(`\nOf ${requestedFeedbackCount} REQUESTED feedback rows:`);
+    Logger.log(`  - ${requestedWithPendingStatus} have status in [PENDING, INVITED, EMAIL SENT]`);
+    Logger.log(`  - ${requestedWithOtherStatus.length} have other statuses`);
+    if (requestedWithOtherStatus.length > 0) {
+      const statusCounts = {};
+      requestedWithOtherStatus.forEach(s => {
+        statusCounts[s] = (statusCounts[s] || 0) + 1;
+      });
+      Logger.log(`  Status breakdown: ${JSON.stringify(statusCounts)}`);
+    }
+    
     // Final summary
     Logger.log(`\n=== SUMMARY ===`);
-    Logger.log(`Expected count: 33`);
-    Logger.log(`Raw count: ${rawCount}`);
-    Logger.log(`After time filter: ${timeFilteredCount}`);
-    Logger.log(`After template filter: ${templateFilteredCount}`);
-    Logger.log(`After position filter: ${positionFilteredCount}`);
-    Logger.log(`After deduplication (FINAL): ${deduplicatedCount}`);
-    Logger.log(`Difference: ${positionFilteredCount - deduplicatedCount} rows lost in deduplication`);
+    Logger.log(`FEEDBACK COUNT:`);
+    Logger.log(`  Expected: 33`);
+    Logger.log(`  Raw count: ${rawCount}`);
+    Logger.log(`  After deduplication: ${deduplicatedCount}`);
+    Logger.log(`  Difference: ${positionFilteredCount - deduplicatedCount} rows lost in deduplication`);
+    Logger.log(`\nPENDING COUNT:`);
+    Logger.log(`  Feedback_status = REQUESTED (raw): ${requestedFeedbackCount}`);
+    Logger.log(`  Status in [PENDING, INVITED, EMAIL SENT] (before dedup): ${pendingByStatusCount}`);
+    Logger.log(`  Status in [PENDING, INVITED, EMAIL SENT] (after dedup): ${deduplicatedPendingCount}`);
+    Logger.log(`  REQUESTED feedback with pending status: ${requestedWithPendingStatus}`);
+    Logger.log(`  REQUESTED feedback with other status: ${requestedWithOtherStatus.length}`);
     
   } catch (error) {
     Logger.log(`ERROR in test: ${error.toString()}`);
@@ -3503,6 +3576,193 @@ function getStatusRank(status) {
   if (statusUpper === 'SCHEDULED') return 2;
   if (statusUpper === 'PENDING' || statusUpper === 'INVITED' || statusUpper === 'EMAIL SENT') return 3;
   return 99; // Other statuses get lower priority
+}
+
+/**
+ * Test function to debug pending count discrepancy
+ * Tests rows with Feedback_status = REQUESTED vs interview status PENDING/INVITED/EMAIL SENT
+ */
+function testPendingCount() {
+  try {
+    Logger.log(`=== Testing Pending Count (Feedback_status = REQUESTED) ===`);
+    
+    // Get raw log data
+    const logData = getLogSheetDataRB();
+    if (!logData || !logData.rows || logData.rows.length === 0) {
+      Logger.log(`ERROR: Could not get log data`);
+      return;
+    }
+    
+    Logger.log(`Total rows in log sheet: ${logData.rows.length}`);
+    
+    // Get column indices
+    const recruiterIdx = logData.colIndices.hasOwnProperty('Recruiter_name') ? logData.colIndices['Recruiter_name'] : -1;
+    const feedbackStatusIdx = logData.colIndices.hasOwnProperty('Feedback_status') ? logData.colIndices['Feedback_status'] : -1;
+    const statusIdx = logData.colIndices['STATUS_COLUMN'];
+    const profileIdIdx = logData.colIndices['Profile_id'];
+    const positionIdIdx = logData.colIndices['Position_id'];
+    
+    Logger.log(`Column indices - Recruiter_name: ${recruiterIdx}, Feedback_status: ${feedbackStatusIdx}, STATUS_COLUMN: ${statusIdx}`);
+    
+    if (recruiterIdx === -1 || feedbackStatusIdx === -1 || statusIdx === -1) {
+      Logger.log(`ERROR: Required columns not found`);
+      return;
+    }
+    
+    // Step 1: Count raw rows with Feedback_status = REQUESTED
+    let requestedFeedbackCount = 0;
+    let requestedRows = [];
+    logData.rows.forEach((row, index) => {
+      if (row.length > feedbackStatusIdx) {
+        const feedbackStatus = row[feedbackStatusIdx] ? String(row[feedbackStatusIdx]).trim().toUpperCase() : '';
+        if (feedbackStatus === 'REQUESTED') {
+          requestedFeedbackCount++;
+          const recruiter = row.length > recruiterIdx ? String(row[recruiterIdx]).trim() : '';
+          const status = row.length > statusIdx ? String(row[statusIdx]).trim() : '';
+          requestedRows.push({ rowIndex: index, recruiter: recruiter, status: status, profileId: row[profileIdIdx], positionId: row[positionIdIdx] });
+        }
+      }
+    });
+    
+    Logger.log(`\nStep 1 - Raw count (Feedback_status = REQUESTED): ${requestedFeedbackCount}`);
+    
+    // Step 2: Count rows with Feedback_status = REQUESTED AND status = PENDING/INVITED/EMAIL SENT
+    const PENDING_STATUSES = ['PENDING', 'INVITED', 'EMAIL SENT'];
+    let requestedAndPendingCount = 0;
+    let requestedButNotPending = [];
+    
+    requestedRows.forEach(rowData => {
+      const row = logData.rows[rowData.rowIndex];
+      const status = row.length > statusIdx ? String(row[statusIdx]).trim() : '';
+      if (PENDING_STATUSES.includes(status)) {
+        requestedAndPendingCount++;
+      } else {
+        requestedButNotPending.push({ recruiter: rowData.recruiter, status: status, profileId: rowData.profileId, positionId: rowData.positionId });
+      }
+    });
+    
+    Logger.log(`\nStep 2 - Count with Feedback_status = REQUESTED AND status in [PENDING, INVITED, EMAIL SENT]: ${requestedAndPendingCount}`);
+    Logger.log(`Rows with REQUESTED feedback but different status: ${requestedButNotPending.length}`);
+    
+    if (requestedButNotPending.length > 0) {
+      Logger.log(`\nSample rows with REQUESTED feedback but not PENDING status:`);
+      requestedButNotPending.slice(0, 10).forEach((r, idx) => {
+        Logger.log(`  ${idx + 1}. Recruiter: ${r.recruiter}, Status: ${r.status}, Profile_id: ${r.profileId}, Position_id: ${r.positionId}`);
+      });
+    }
+    
+    // Step 3: After time range filter
+    const filteredData = filterDataByTimeRangeRB(logData.rows, logData.colIndices);
+    let timeFilteredRequestedCount = 0;
+    filteredData.forEach(row => {
+      if (row.length > feedbackStatusIdx) {
+        const feedbackStatus = row[feedbackStatusIdx] ? String(row[feedbackStatusIdx]).trim().toUpperCase() : '';
+        if (feedbackStatus === 'REQUESTED') {
+          timeFilteredRequestedCount++;
+        }
+      }
+    });
+    Logger.log(`\nStep 3 - After time range filter (REQUESTED): ${timeFilteredRequestedCount}`);
+    
+    // Step 4: After template filter
+    const feedbackTemplateIndex = logData.colIndices.hasOwnProperty('Feedback_template_name') ? logData.colIndices['Feedback_template_name'] : -1;
+    const excludedTemplates = ["AI Coding Interview Metrics Feedback Form", "AI Functional Interview Feedback Form"];
+    let templateFilteredData = filteredData;
+    if (feedbackTemplateIndex !== -1) {
+      templateFilteredData = filteredData.filter(row => {
+        if (row.length <= feedbackTemplateIndex) return true;
+        const templateName = row[feedbackTemplateIndex] ? String(row[feedbackTemplateIndex]).trim() : '';
+        return !excludedTemplates.includes(templateName);
+      });
+    }
+    
+    let templateFilteredRequestedCount = 0;
+    templateFilteredData.forEach(row => {
+      if (row.length > feedbackStatusIdx) {
+        const feedbackStatus = row[feedbackStatusIdx] ? String(row[feedbackStatusIdx]).trim().toUpperCase() : '';
+        if (feedbackStatus === 'REQUESTED') {
+          templateFilteredRequestedCount++;
+        }
+      }
+    });
+    Logger.log(`\nStep 4 - After template filter (REQUESTED): ${templateFilteredRequestedCount}`);
+    
+    // Step 5: After position filter
+    const positionNameIndex = logData.colIndices.hasOwnProperty('Position_name') ? logData.colIndices['Position_name'] : -1;
+    const positionToExclude = "AIR Testing";
+    let finalFilteredData = templateFilteredData;
+    if (positionNameIndex !== -1) {
+      finalFilteredData = templateFilteredData.filter(row => {
+        return !(row.length > positionNameIndex && row[positionNameIndex] === positionToExclude);
+      });
+    }
+    
+    let positionFilteredRequestedCount = 0;
+    finalFilteredData.forEach(row => {
+      if (row.length > feedbackStatusIdx) {
+        const feedbackStatus = row[feedbackStatusIdx] ? String(row[feedbackStatusIdx]).trim().toUpperCase() : '';
+        if (feedbackStatus === 'REQUESTED') {
+          positionFilteredRequestedCount++;
+        }
+      }
+    });
+    Logger.log(`\nStep 5 - After position filter (REQUESTED): ${positionFilteredRequestedCount}`);
+    
+    // Step 6: Count pending based on status (current logic)
+    let pendingByStatusCount = 0;
+    finalFilteredData.forEach(row => {
+      if (row.length > statusIdx) {
+        const status = String(row[statusIdx]).trim();
+        if (PENDING_STATUSES.includes(status)) {
+          pendingByStatusCount++;
+        }
+      }
+    });
+    Logger.log(`\nStep 6 - Pending count based on status [PENDING, INVITED, EMAIL SENT]: ${pendingByStatusCount}`);
+    
+    // Step 7: After deduplication
+    const groupedData = {};
+    finalFilteredData.forEach(row => {
+      if (row && row.length > profileIdIdx && row.length > positionIdIdx && row.length > statusIdx) {
+        const profileId = row[profileIdIdx];
+        const positionId = row[positionIdIdx];
+        if (profileId && positionId) {
+          const key = `${profileId}_${positionId}`;
+          const status = String(row[statusIdx]).trim();
+          const statusRank = getStatusRank(status);
+          
+          if (!groupedData[key] || statusRank < groupedData[key].bestRank) {
+            groupedData[key] = { bestRank: statusRank, row: row };
+          }
+        }
+      }
+    });
+    
+    const deduplicatedRows = Object.values(groupedData).map(item => item.row);
+    let deduplicatedPendingCount = 0;
+    deduplicatedRows.forEach(row => {
+      if (row.length > statusIdx) {
+        const status = String(row[statusIdx]).trim();
+        if (PENDING_STATUSES.includes(status)) {
+          deduplicatedPendingCount++;
+        }
+      }
+    });
+    Logger.log(`\nStep 7 - After deduplication (Pending by status): ${deduplicatedPendingCount}`);
+    
+    // Final summary
+    Logger.log(`\n=== SUMMARY ===`);
+    Logger.log(`Rows with Feedback_status = REQUESTED (raw): ${requestedFeedbackCount}`);
+    Logger.log(`Rows with Feedback_status = REQUESTED AND status in [PENDING, INVITED, EMAIL SENT]: ${requestedAndPendingCount}`);
+    Logger.log(`Rows with REQUESTED feedback but different status: ${requestedButNotPending.length}`);
+    Logger.log(`Pending count by status (after all filters, before deduplication): ${pendingByStatusCount}`);
+    Logger.log(`Pending count by status (after deduplication): ${deduplicatedPendingCount}`);
+    Logger.log(`\nDifference: ${requestedFeedbackCount - deduplicatedPendingCount} rows`);
+    
+  } catch (error) {
+    Logger.log(`ERROR in test: ${error.toString()}`);
+    Logger.log(`Stack: ${error.stack}`);
+  }
 }
 
 function testValidationSheetFunctionality() {
