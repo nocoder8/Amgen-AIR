@@ -317,6 +317,11 @@ function AIR_DailySummarytoAP() {
     // 3. Calculate Metrics (Uses RB calculator)
     const metrics = calculateCompanyMetricsRB(deduplicatedData, logData.colIndices);
     Logger.log('Successfully calculated company metrics with recruiter breakdown.');
+    
+    // 3a. Count feedback from ALL rows (before deduplication) to capture all feedback submissions
+    // This ensures we count all feedback even if there are duplicate Profile_id + Position_id combinations
+    countFeedbackFromAllRows(finalFilteredData, logData.colIndices, metrics);
+    Logger.log('Successfully counted feedback from all rows (including duplicates).');
     // Logger.log(`Calculated Metrics: ${JSON.stringify(metrics)}`); // Optional: Log detailed metrics
 
     // 4. Create HTML Report (Uses RB creator) - Pass adoption, activity data, and log creator index
@@ -340,6 +345,82 @@ function AIR_DailySummarytoAP() {
 }
 
 // --- Data Retrieval and Processing Functions ---
+
+/**
+ * Counts feedback from ALL rows (before deduplication) and adds to metrics.
+ * This ensures we count all feedback submissions even if there are duplicate Profile_id + Position_id combinations.
+ * @param {Array<Array>} allRows All filtered rows before deduplication
+ * @param {object} colIndices Column indices object
+ * @param {object} metrics Metrics object to update
+ */
+function countFeedbackFromAllRows(allRows, colIndices, metrics) {
+  const feedbackStatusIdx = colIndices.hasOwnProperty('Feedback_status') ? colIndices['Feedback_status'] : -1;
+  const recruiterIdx = colIndices.hasOwnProperty('Recruiter_name') ? colIndices['Recruiter_name'] : -1;
+  const creatorIdx = colIndices.hasOwnProperty('Creator_user_id') ? colIndices['Creator_user_id'] : -1;
+  const jobFuncIdx = colIndices.hasOwnProperty('Job_function') ? colIndices['Job_function'] : -1;
+  const countryIdx = colIndices.hasOwnProperty('Location_country') ? colIndices['Location_country'] : -1;
+  
+  if (feedbackStatusIdx === -1) {
+    Logger.log('WARNING: Feedback_status column not found. Cannot count feedback from all rows.');
+    return;
+  }
+  
+  // Reset feedback counts (they were calculated from deduplicated data)
+  metrics.totalFeedbackSubmitted = 0;
+  Object.keys(metrics.byRecruiter).forEach(rec => {
+    metrics.byRecruiter[rec].feedbackSubmitted = 0;
+  });
+  Object.keys(metrics.byCreator).forEach(crt => {
+    metrics.byCreator[crt].feedbackSubmitted = 0;
+  });
+  Object.keys(metrics.byJobFunction).forEach(jf => {
+    metrics.byJobFunction[jf].feedbackSubmitted = 0;
+  });
+  Object.keys(metrics.byCountry).forEach(ctry => {
+    metrics.byCountry[ctry].feedbackSubmitted = 0;
+  });
+  
+  // Count feedback from ALL rows
+  allRows.forEach(row => {
+    if (row.length > feedbackStatusIdx) {
+      const feedbackStatusRaw = row[feedbackStatusIdx] ? String(row[feedbackStatusIdx]).trim() : '';
+      const feedbackStatusNormalized = feedbackStatusRaw.toLowerCase().trim();
+      const isFeedbackSubmitted = feedbackStatusNormalized === 'submitted';
+      
+      if (isFeedbackSubmitted) {
+        metrics.totalFeedbackSubmitted++;
+        
+        // Get breakdown values
+        const recruiter = (recruiterIdx !== -1 && row.length > recruiterIdx && row[recruiterIdx]) ? String(row[recruiterIdx]).trim() : 'Unknown';
+        const creator = (creatorIdx !== -1 && row.length > creatorIdx && row[creatorIdx]) ? String(row[creatorIdx]).trim() : 'Unknown';
+        const jobFunc = (jobFuncIdx !== -1 && row.length > jobFuncIdx && row[jobFuncIdx]) ? String(row[jobFuncIdx]).trim() : 'Unknown';
+        const country = (countryIdx !== -1 && row.length > countryIdx && row[countryIdx]) ? String(row[countryIdx]).trim() : 'Unknown';
+        
+        // Initialize if needed
+        if (!metrics.byRecruiter[recruiter]) {
+          metrics.byRecruiter[recruiter] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, recruiterSubmissionAwaited: 0, statusCounts: {} };
+        }
+        if (!metrics.byCreator[creator]) {
+          metrics.byCreator[creator] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, recruiterSubmissionAwaited: 0, statusCounts: {} };
+        }
+        if (!metrics.byJobFunction[jobFunc]) {
+          metrics.byJobFunction[jobFunc] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, recruiterSubmissionAwaited: 0, statusCounts: {} };
+        }
+        if (!metrics.byCountry[country]) {
+          metrics.byCountry[country] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, statusCounts: {} };
+        }
+        
+        // Increment feedback counts
+        metrics.byRecruiter[recruiter].feedbackSubmitted++;
+        metrics.byCreator[creator].feedbackSubmitted++;
+        metrics.byJobFunction[jobFunc].feedbackSubmitted++;
+        metrics.byCountry[country].feedbackSubmitted++;
+      }
+    }
+  });
+  
+  Logger.log(`Counted feedback from all rows: ${metrics.totalFeedbackSubmitted} total feedback submissions`);
+}
 
 /**
  * Reads and processes data from the Log_Enhanced sheet for Recruiter Breakdown.
