@@ -347,8 +347,8 @@ function AIR_DailySummarytoAP() {
 // --- Data Retrieval and Processing Functions ---
 
 /**
- * Counts feedback from ALL rows (before deduplication) and adds to metrics.
- * This ensures we count all feedback submissions even if there are duplicate Profile_id + Position_id combinations.
+ * Counts feedback and pending from ALL rows (before deduplication) and adds to metrics.
+ * This ensures we count all feedback submissions and pending requests even if there are duplicate Profile_id + Position_id combinations.
  * @param {Array<Array>} allRows All filtered rows before deduplication
  * @param {object} colIndices Column indices object
  * @param {object} metrics Metrics object to update
@@ -361,60 +361,72 @@ function countFeedbackFromAllRows(allRows, colIndices, metrics) {
   const countryIdx = colIndices.hasOwnProperty('Location_country') ? colIndices['Location_country'] : -1;
   
   if (feedbackStatusIdx === -1) {
-    Logger.log('WARNING: Feedback_status column not found. Cannot count feedback from all rows.');
+    Logger.log('WARNING: Feedback_status column not found. Cannot count feedback/pending from all rows.');
     return;
   }
   
-  // Reset feedback counts (they were calculated from deduplicated data)
+  // Reset feedback and pending counts (they were calculated from deduplicated data)
   metrics.totalFeedbackSubmitted = 0;
   Object.keys(metrics.byRecruiter).forEach(rec => {
     metrics.byRecruiter[rec].feedbackSubmitted = 0;
+    metrics.byRecruiter[rec].pending = 0;
   });
   Object.keys(metrics.byCreator).forEach(crt => {
     metrics.byCreator[crt].feedbackSubmitted = 0;
+    metrics.byCreator[crt].pending = 0;
   });
   Object.keys(metrics.byJobFunction).forEach(jf => {
     metrics.byJobFunction[jf].feedbackSubmitted = 0;
+    metrics.byJobFunction[jf].pending = 0;
   });
   Object.keys(metrics.byCountry).forEach(ctry => {
     metrics.byCountry[ctry].feedbackSubmitted = 0;
+    metrics.byCountry[ctry].pending = 0;
   });
   
-  // Count feedback from ALL rows
+  // Count feedback and pending from ALL rows
   allRows.forEach(row => {
     if (row.length > feedbackStatusIdx) {
       const feedbackStatusRaw = row[feedbackStatusIdx] ? String(row[feedbackStatusIdx]).trim() : '';
       const feedbackStatusNormalized = feedbackStatusRaw.toLowerCase().trim();
       const isFeedbackSubmitted = feedbackStatusNormalized === 'submitted';
+      const isRequestedFeedback = feedbackStatusNormalized === 'requested';
       
+      // Get breakdown values
+      const recruiter = (recruiterIdx !== -1 && row.length > recruiterIdx && row[recruiterIdx]) ? String(row[recruiterIdx]).trim() : 'Unknown';
+      const creator = (creatorIdx !== -1 && row.length > creatorIdx && row[creatorIdx]) ? String(row[creatorIdx]).trim() : 'Unknown';
+      const jobFunc = (jobFuncIdx !== -1 && row.length > jobFuncIdx && row[jobFuncIdx]) ? String(row[jobFuncIdx]).trim() : 'Unknown';
+      const country = (countryIdx !== -1 && row.length > countryIdx && row[countryIdx]) ? String(row[countryIdx]).trim() : 'Unknown';
+      
+      // Initialize if needed
+      if (!metrics.byRecruiter[recruiter]) {
+        metrics.byRecruiter[recruiter] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, recruiterSubmissionAwaited: 0, statusCounts: {} };
+      }
+      if (!metrics.byCreator[creator]) {
+        metrics.byCreator[creator] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, recruiterSubmissionAwaited: 0, statusCounts: {} };
+      }
+      if (!metrics.byJobFunction[jobFunc]) {
+        metrics.byJobFunction[jobFunc] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, recruiterSubmissionAwaited: 0, statusCounts: {} };
+      }
+      if (!metrics.byCountry[country]) {
+        metrics.byCountry[country] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, statusCounts: {} };
+      }
+      
+      // Count feedback submissions
       if (isFeedbackSubmitted) {
         metrics.totalFeedbackSubmitted++;
-        
-        // Get breakdown values
-        const recruiter = (recruiterIdx !== -1 && row.length > recruiterIdx && row[recruiterIdx]) ? String(row[recruiterIdx]).trim() : 'Unknown';
-        const creator = (creatorIdx !== -1 && row.length > creatorIdx && row[creatorIdx]) ? String(row[creatorIdx]).trim() : 'Unknown';
-        const jobFunc = (jobFuncIdx !== -1 && row.length > jobFuncIdx && row[jobFuncIdx]) ? String(row[jobFuncIdx]).trim() : 'Unknown';
-        const country = (countryIdx !== -1 && row.length > countryIdx && row[countryIdx]) ? String(row[countryIdx]).trim() : 'Unknown';
-        
-        // Initialize if needed
-        if (!metrics.byRecruiter[recruiter]) {
-          metrics.byRecruiter[recruiter] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, recruiterSubmissionAwaited: 0, statusCounts: {} };
-        }
-        if (!metrics.byCreator[creator]) {
-          metrics.byCreator[creator] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, recruiterSubmissionAwaited: 0, statusCounts: {} };
-        }
-        if (!metrics.byJobFunction[jobFunc]) {
-          metrics.byJobFunction[jobFunc] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, recruiterSubmissionAwaited: 0, statusCounts: {} };
-        }
-        if (!metrics.byCountry[country]) {
-          metrics.byCountry[country] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, statusCounts: {} };
-        }
-        
-        // Increment feedback counts
         metrics.byRecruiter[recruiter].feedbackSubmitted++;
         metrics.byCreator[creator].feedbackSubmitted++;
         metrics.byJobFunction[jobFunc].feedbackSubmitted++;
         metrics.byCountry[country].feedbackSubmitted++;
+      }
+      
+      // Count pending (based on Feedback_status = REQUESTED)
+      if (isRequestedFeedback) {
+        metrics.byRecruiter[recruiter].pending++;
+        metrics.byCreator[creator].pending++;
+        metrics.byJobFunction[jobFunc].pending++;
+        metrics.byCountry[country].pending++;
       }
     }
   });
@@ -989,8 +1001,12 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
          metrics.byCreator[creator].scheduled++; // <<< INCREMENT Creator Scheduled
     }
 
-    // --- Check if Pending ---
-    if (PENDING_STATUSES.includes(statusRaw)) {
+    // --- Check if Pending (based on Feedback_status = REQUESTED) ---
+    // Count pending based on Feedback_status = REQUESTED instead of interview status
+    const feedbackStatusNormalized = feedbackStatusRaw.toLowerCase().trim();
+    const isRequestedFeedback = feedbackStatusNormalized === 'requested';
+    
+    if (isRequestedFeedback) {
         metrics.byJobFunction[jobFunc].pending++;
         metrics.byCountry[country].pending++;
         metrics.byRecruiter[recruiter].pending++; // <<< INCREMENT Recruiter Pending
