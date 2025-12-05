@@ -1300,13 +1300,13 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
              <thead>
                 <tr>
-                           <th style="padding: 10px 8px; text-align: left; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Recruiter</th>
-                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Sent</th>
-                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">COMPLETED<br>INTERVIEWS</th>
-                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">UPCOMING<br>SCHEDULED INTERVIEW</th>
-                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">PENDING<br>CANDIDATE INTERVIEW</th>
-                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">FEEDBACK SUBMITTED<br>BY CREATOR</th>
-                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">CREATOR FEEDBACK<br>REVIEW PENDING</th>
+                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Recruiter</th>
+                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Sent</th>
+                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">COMPLETED<br>INTERVIEWS</th>
+                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">UPCOMING<br>SCHEDULED INTERVIEW</th>
+                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">PENDING<br>CANDIDATE INTERVIEW</th>
+                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">FEEDBACK SUBMITTED<br>BY CREATOR</th>
+                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">CREATOR FEEDBACK<br>REVIEW PENDING</th>
                  </tr>
              </thead>
              <tbody>
@@ -1335,13 +1335,13 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                                 const medal = recruiterMedalMap[rec] || ''; // Get medal or empty string
                                 return `
                                   <tr>
-                                     <td style="padding: 12px 8px; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${medal}${medal ? ' ' : ''}${rec}</td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.sent}</td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.completedNumber} <span style="color: #667eea; font-size: 11px;">${data.completedPercentOfSent}%</span></td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.scheduled}</td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.pendingNumber} <span style="color: #667eea; font-size: 11px;">${data.pendingPercentOfSent}%</span></td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.feedbackSubmitted}</td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; border-bottom: 1px solid #f5f5f5;">
+                                     <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${medal}${medal ? ' ' : ''}${rec}</td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.sent}</td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.completedNumber} <span style="color: #667eea; font-size: 11px;">${data.completedPercentOfSent}%</span></td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.scheduled}</td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.pendingNumber} <span style="color: #667eea; font-size: 11px;">${data.pendingPercentOfSent}%</span></td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.feedbackSubmitted}</td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; border-bottom: 1px solid #f5f5f5;">
                                         ${data.recruiterSubmissionAwaited > 0 ? 
                                             `<span style="color: #f5576c; font-weight: 700;">${data.recruiterSubmissionAwaited}</span>` : 
                                             `<span style="color: #999;">${data.recruiterSubmissionAwaited}</span>`
@@ -1367,13 +1367,13 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
              <thead>
                 <tr>
-                           <th style="padding: 10px 8px; text-align: left; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Creator</th>
-                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Sent</th>
-                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">COMPLETED<br>INTERVIEWS</th>
-                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">UPCOMING<br>SCHEDULED INTERVIEW</th>
-                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">PENDING<br>CANDIDATE INTERVIEW</th>
-                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">FEEDBACK SUBMITTED<br>BY CREATOR</th>
-                           <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">CREATOR FEEDBACK<br>REVIEW PENDING</th>
+                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Creator</th>
+                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Sent</th>
+                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">COMPLETED<br>INTERVIEWS</th>
+                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">UPCOMING<br>SCHEDULED INTERVIEW</th>
+                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">PENDING<br>CANDIDATE INTERVIEW</th>
+                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">FEEDBACK SUBMITTED<br>BY CREATOR</th>
+                           <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">CREATOR FEEDBACK<br>REVIEW PENDING</th>
                  </tr>
              </thead>
              <tbody>
@@ -1402,13 +1402,13 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                                 const medal = creatorMedalMap[crt] || ''; // Get medal or empty string
                                 return `
                                   <tr>
-                                     <td style="padding: 12px 8px; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${medal}${medal ? ' ' : ''}${crt}</td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.sent}</td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.completedNumber} <span style="color: #667eea; font-size: 11px;">${data.completedPercentOfSent}%</span></td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.scheduled}</td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.pendingNumber} <span style="color: #667eea; font-size: 11px;">${data.pendingPercentOfSent}%</span></td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.feedbackSubmitted}</td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; border-bottom: 1px solid #f5f5f5;">
+                                     <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${medal}${medal ? ' ' : ''}${crt}</td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.sent}</td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.completedNumber} <span style="color: #667eea; font-size: 11px;">${data.completedPercentOfSent}%</span></td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.scheduled}</td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.pendingNumber} <span style="color: #667eea; font-size: 11px;">${data.pendingPercentOfSent}%</span></td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.feedbackSubmitted}</td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; border-bottom: 1px solid #f5f5f5;">
                                         ${data.recruiterSubmissionAwaited > 0 ? 
                                             `<span style="color: #f5576c; font-weight: 700;">${data.recruiterSubmissionAwaited}</span>` : 
                                             `<span style="color: #999;">${data.recruiterSubmissionAwaited}</span>`
@@ -1517,13 +1517,13 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                   <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
              <thead>
                 <tr>
-                            <th style="padding: 10px 8px; text-align: left; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Job Function</th>
-                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Sent</th>
-                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">COMPLETED<br>INTERVIEWS</th>
-                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">UPCOMING<br>SCHEDULED INTERVIEW</th>
-                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">PENDING<br>CANDIDATE INTERVIEW</th>
-                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">FEEDBACK SUBMITTED<br>BY CREATOR</th>
-                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">CREATOR FEEDBACK<br>REVIEW PENDING</th>
+                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Job Function</th>
+                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Sent</th>
+                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">COMPLETED<br>INTERVIEWS</th>
+                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">UPCOMING<br>SCHEDULED INTERVIEW</th>
+                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">PENDING<br>CANDIDATE INTERVIEW</th>
+                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">FEEDBACK SUBMITTED<br>BY CREATOR</th>
+                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">CREATOR FEEDBACK<br>REVIEW PENDING</th>
                  </tr>
              </thead>
              <tbody>
@@ -1531,13 +1531,13 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                      .sort(([funcA], [funcB]) => funcA.localeCompare(funcB))
                               .map(([func, data], index) => `
                                   <tr>
-                                      <td style="padding: 12px 8px; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${func}</td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.sent}</td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.completedNumber} <span style="color: #667eea; font-size: 11px;">${data.completedPercentOfSent}%</span></td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.scheduled}</td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.pendingNumber} <span style="color: #667eea; font-size: 11px;">${data.pendingPercentOfSent}%</span></td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.feedbackSubmitted}</td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; border-bottom: 1px solid #f5f5f5;">
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${func}</td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.sent}</td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.completedNumber} <span style="color: #667eea; font-size: 11px;">${data.completedPercentOfSent}%</span></td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.scheduled}</td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.pendingNumber} <span style="color: #667eea; font-size: 11px;">${data.pendingPercentOfSent}%</span></td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.feedbackSubmitted}</td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; border-bottom: 1px solid #f5f5f5;">
                                         ${data.recruiterSubmissionAwaited > 0 ? 
                                             `<span style="color: #f5576c; font-weight: 700;">${data.recruiterSubmissionAwaited}</span>` : 
                                             `<span style="color: #999;">${data.recruiterSubmissionAwaited}</span>`
@@ -1559,13 +1559,13 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
              <thead>
                 <tr>
-                            <th style="padding: 10px 8px; text-align: left; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Country</th>
-                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Sent</th>
-                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">COMPLETED<br>INTERVIEWS</th>
-                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">UPCOMING<br>SCHEDULED INTERVIEW</th>
-                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">PENDING<br>CANDIDATE INTERVIEW</th>
-                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">FEEDBACK SUBMITTED<br>BY CREATOR</th>
-                            <th style="padding: 10px 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">CREATOR FEEDBACK<br>REVIEW PENDING</th>
+                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Country</th>
+                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Sent</th>
+                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">COMPLETED<br>INTERVIEWS</th>
+                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">UPCOMING<br>SCHEDULED INTERVIEW</th>
+                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">PENDING<br>CANDIDATE INTERVIEW</th>
+                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">FEEDBACK SUBMITTED<br>BY CREATOR</th>
+                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">CREATOR FEEDBACK<br>REVIEW PENDING</th>
                  </tr>
              </thead>
              <tbody>
@@ -1573,13 +1573,13 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                      .sort(([ctryA], [ctryB]) => ctryA.localeCompare(ctryB))
                               .map(([ctry, data], index) => `
                                   <tr>
-                                      <td style="padding: 12px 8px; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${ctry}</td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.sent}</td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.completedNumber} <span style="color: #667eea; font-size: 11px;">${data.completedPercentOfSent}%</span></td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.scheduled}</td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.pendingNumber} <span style="color: #667eea; font-size: 11px;">${data.pendingPercentOfSent}%</span></td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.feedbackSubmitted}</td>
-                                      <td style="padding: 12px 8px; text-align: right; font-size: 12px; border-bottom: 1px solid #f5f5f5;">
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${ctry}</td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.sent}</td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.completedNumber} <span style="color: #667eea; font-size: 11px;">${data.completedPercentOfSent}%</span></td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.scheduled}</td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.pendingNumber} <span style="color: #667eea; font-size: 11px;">${data.pendingPercentOfSent}%</span></td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.feedbackSubmitted}</td>
+                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; border-bottom: 1px solid #f5f5f5;">
                                         ${data.recruiterSubmissionAwaited > 0 ? 
                                             `<span style="color: #f5576c; font-weight: 700;">${data.recruiterSubmissionAwaited}</span>` : 
                                             `<span style="color: #999;">${data.recruiterSubmissionAwaited}</span>`
