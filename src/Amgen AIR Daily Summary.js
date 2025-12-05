@@ -208,9 +208,9 @@ function AIR_DailySummarytoAP() {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Use start of today
 
-    // Generate dates for the last 10 days (yesterday back to 10 days ago)
+    // Generate dates for the last 10 days (today back to 9 days ago)
     const trendDates = [];
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 0; i <= 9; i++) {
         const date = new Date(today);
         date.setDate(today.getDate() - i);
         trendDates.push(date);
