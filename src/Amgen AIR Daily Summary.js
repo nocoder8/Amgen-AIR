@@ -318,10 +318,15 @@ function AIR_DailySummarytoAP() {
     const metrics = calculateCompanyMetricsRB(deduplicatedData, logData.colIndices);
     Logger.log('Successfully calculated company metrics with recruiter breakdown.');
     
-    // 3a. Count feedback and pending from ALL rows (before deduplication) to capture all submissions
-    // This ensures we count all feedback and pending even if there are duplicate Profile_id + Position_id combinations
+    // 3a. Count feedback from ALL rows (before deduplication) to capture all feedback submissions
+    // This ensures we count all feedback even if there are duplicate Profile_id + Position_id combinations
+    // Note: Pending is now counted from deduplicated data to match manual validation expectations
     countFeedbackFromAllRows(finalFilteredData, logData.colIndices, metrics);
-    Logger.log('Successfully counted feedback and pending from all rows (including duplicates).');
+    Logger.log('Successfully counted feedback from all rows (including duplicates).');
+    
+    // 3a-2. Recalculate pending from deduplicated data (to match manual validation)
+    recalculatePendingFromDeduplicatedData(deduplicatedData, logData.colIndices, metrics);
+    Logger.log('Successfully recalculated pending from deduplicated data.');
     
     // 3b. Recalculate "sent" counts from deduplicated data to ensure consistency
     // This ensures "sent" matches the deduplicated row count (excluding duplicates)
@@ -426,13 +431,8 @@ function countFeedbackFromAllRows(allRows, colIndices, metrics) {
         metrics.byCountry[country].feedbackSubmitted++;
       }
       
-      // Count pending (based on Feedback_status = REQUESTED)
-      if (isRequestedFeedback) {
-        metrics.byRecruiter[recruiter].pending++;
-        metrics.byCreator[creator].pending++;
-        metrics.byJobFunction[jobFunc].pending++;
-        metrics.byCountry[country].pending++;
-      }
+      // Note: Pending is now counted from deduplicated data (not from all rows)
+      // This was moved to recalculatePendingFromDeduplicatedData() to match manual validation
     }
   });
   
@@ -498,6 +498,79 @@ function recalculateSentFromDeduplicatedData(deduplicatedRows, colIndices, metri
   metrics.totalSent = deduplicatedRows.length;
   
   Logger.log(`Recalculated sent counts from deduplicated data: ${metrics.totalSent} total sent (after deduplication)`);
+}
+
+/**
+ * Recalculates pending counts from deduplicated data to match manual validation.
+ * This ensures pending counts match the deduplicated row count (excluding duplicates).
+ * @param {Array<Array>} deduplicatedRows Deduplicated rows
+ * @param {object} colIndices Column indices object
+ * @param {object} metrics Metrics object to update
+ */
+function recalculatePendingFromDeduplicatedData(deduplicatedRows, colIndices, metrics) {
+  const statusIdx = colIndices['STATUS_COLUMN'];
+  const recruiterIdx = colIndices.hasOwnProperty('Recruiter_name') ? colIndices['Recruiter_name'] : -1;
+  const creatorIdx = colIndices.hasOwnProperty('Creator_user_id') ? colIndices['Creator_user_id'] : -1;
+  const jobFuncIdx = colIndices.hasOwnProperty('Job_function') ? colIndices['Job_function'] : -1;
+  const countryIdx = colIndices.hasOwnProperty('Location_country') ? colIndices['Location_country'] : -1;
+  
+  if (statusIdx === -1 || statusIdx === undefined) {
+    Logger.log('WARNING: STATUS_COLUMN not found. Cannot recalculate pending from deduplicated data.');
+    return;
+  }
+  
+  const PENDING_STATUSES = ['PENDING', 'INVITED', 'EMAIL SENT'];
+  
+  // Reset all pending counts
+  Object.keys(metrics.byRecruiter).forEach(rec => {
+    metrics.byRecruiter[rec].pending = 0;
+  });
+  Object.keys(metrics.byCreator).forEach(crt => {
+    metrics.byCreator[crt].pending = 0;
+  });
+  Object.keys(metrics.byJobFunction).forEach(jf => {
+    metrics.byJobFunction[jf].pending = 0;
+  });
+  Object.keys(metrics.byCountry).forEach(ctry => {
+    metrics.byCountry[ctry].pending = 0;
+  });
+  
+  // Recalculate pending from deduplicated data (based on Interview_status_real = PENDING)
+  deduplicatedRows.forEach(row => {
+    if (row.length > statusIdx) {
+      const statusRaw = row[statusIdx] ? String(row[statusIdx]).trim() : '';
+      const isPending = PENDING_STATUSES.includes(statusRaw);
+      
+      if (isPending) {
+        const recruiter = (recruiterIdx !== -1 && row.length > recruiterIdx && row[recruiterIdx]) ? String(row[recruiterIdx]).trim() : 'Unknown';
+        const creator = (creatorIdx !== -1 && row.length > creatorIdx && row[creatorIdx]) ? String(row[creatorIdx]).trim() : 'Unknown';
+        const jobFunc = (jobFuncIdx !== -1 && row.length > jobFuncIdx && row[jobFuncIdx]) ? String(row[jobFuncIdx]).trim() : 'Unknown';
+        const country = (countryIdx !== -1 && row.length > countryIdx && row[countryIdx]) ? String(row[countryIdx]).trim() : 'Unknown';
+        
+        // Initialize if needed
+        if (!metrics.byRecruiter[recruiter]) {
+          metrics.byRecruiter[recruiter] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, recruiterSubmissionAwaited: 0, statusCounts: {} };
+        }
+        if (!metrics.byCreator[creator]) {
+          metrics.byCreator[creator] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, recruiterSubmissionAwaited: 0, statusCounts: {} };
+        }
+        if (!metrics.byJobFunction[jobFunc]) {
+          metrics.byJobFunction[jobFunc] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, recruiterSubmissionAwaited: 0, statusCounts: {} };
+        }
+        if (!metrics.byCountry[country]) {
+          metrics.byCountry[country] = { sent: 0, scheduled: 0, completed: 0, pending: 0, feedbackSubmitted: 0, statusCounts: {} };
+        }
+        
+        // Increment pending counts from deduplicated data
+        metrics.byRecruiter[recruiter].pending++;
+        metrics.byCreator[creator].pending++;
+        metrics.byJobFunction[jobFunc].pending++;
+        metrics.byCountry[country].pending++;
+      }
+    }
+  });
+  
+  Logger.log(`Recalculated pending from deduplicated data (based on Interview_status_real = PENDING)`);
 }
 
 /**
@@ -1067,12 +1140,9 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
          metrics.byCreator[creator].scheduled++; // <<< INCREMENT Creator Scheduled
     }
 
-    // --- Check if Pending (based on Feedback_status = REQUESTED) ---
-    // Count pending based on Feedback_status = REQUESTED instead of interview status
-    const feedbackStatusNormalized = feedbackStatusRaw.toLowerCase().trim();
-    const isRequestedFeedback = feedbackStatusNormalized === 'requested';
-    
-    if (isRequestedFeedback) {
+    // --- Check if Pending (based on Interview_status_real = PENDING) ---
+    // Count pending based on Interview_status_real = PENDING (not Feedback_status = REQUESTED)
+    if (PENDING_STATUSES.includes(statusRaw)) {
         metrics.byJobFunction[jobFunc].pending++;
         metrics.byCountry[country].pending++;
         metrics.byRecruiter[recruiter].pending++; // <<< INCREMENT Recruiter Pending
