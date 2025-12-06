@@ -1378,7 +1378,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
   let html = `<!DOCTYPE html>
 <html>
 <head>
-  <title>${VS_COMPANY_NAME_RB} AI Interview Daily Summary</title>
+  <title>AI Interviewer adoption at Amgen</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
@@ -1390,7 +1390,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
           <!-- Modern Header with Gradient -->
           <tr>
             <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 32px 24px; text-align: center;">
-              <h1 style="color: #ffffff; font-size: 28px; font-weight: 700; margin: 0; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">AI Interview Daily Summary</h1>
+              <h1 style="color: #ffffff; font-size: 28px; font-weight: 700; margin: 0; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">AI Interviewer adoption at Amgen</h1>
               <p style="color: rgba(255,255,255,0.9); font-size: 14px; margin: 8px 0 0 0; font-weight: 400;">${VS_COMPANY_NAME_RB} • ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
             </td>
           </tr>
