@@ -1149,8 +1149,11 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
         metrics.byCreator[creator].pending++; // <<< INCREMENT Creator Pending
     }
 
-    // --- Check if Completed ---
-    let isCompleted = COMPLETED_STATUSES.includes(statusRaw);
+    // --- Check if Completed (based on Feedback_status = SUBMITTED) ---
+    // Count completed based on Feedback_status = SUBMITTED (feedback can only be submitted if interview is completed)
+    const feedbackStatusNormalized = feedbackStatusRaw.toLowerCase().trim();
+    const isCompleted = feedbackStatusNormalized === 'submitted';
+    
     if (isCompleted) {
       metrics.totalCompleted++; // Increment original total completed
       metrics.byJobFunction[jobFunc].completed++; // Increment original breakdown completed
