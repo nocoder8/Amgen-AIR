@@ -1149,10 +1149,10 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
         metrics.byCreator[creator].pending++; // <<< INCREMENT Creator Pending
     }
 
-    // --- Check if Completed (based on Feedback_status = SUBMITTED) ---
-    // Count completed based on Feedback_status = SUBMITTED (feedback can only be submitted if interview is completed)
+    // --- Check if Completed (based on Feedback_status = SUBMITTED OR AI_RECOMMENDED) ---
+    // Count completed based on Feedback_status = SUBMITTED OR AI_RECOMMENDED (feedback can only be submitted/recommended if interview is completed)
     const feedbackStatusNormalized = feedbackStatusRaw.toLowerCase().trim();
-    const isCompleted = feedbackStatusNormalized === 'submitted';
+    const isCompleted = feedbackStatusNormalized === 'submitted' || feedbackStatusNormalized === 'ai_recommended';
     
     if (isCompleted) {
       metrics.totalCompleted++; // Increment original total completed
