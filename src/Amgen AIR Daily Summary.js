@@ -169,80 +169,6 @@ function AIR_DailySummarytoAP() {
          return;
     }
 
-    // <<< Calculate Creator Last Sent Activity & Daily Trends >>>
-    const creatorLastSentMap = new Map();
-    const creatorDailyCounts = new Map(); // Map<CreatorId, Map<DateString, Count>>
-    const creatorIdx_Log = logData.colIndices.hasOwnProperty('Creator_user_id') ? logData.colIndices['Creator_user_id'] : -1;
-    const emailSentIdx_Log = logData.colIndices['Interview_email_sent_at']; // Already required
-
-    if (creatorIdx_Log !== -1) {
-        finalFilteredData.forEach(row => {
-            if (row.length > Math.max(creatorIdx_Log, emailSentIdx_Log)) {
-                const creatorId = row[creatorIdx_Log]?.trim();
-                const rawSentDate = row[emailSentIdx_Log];
-                if (creatorId && creatorId !== 'Unknown' && rawSentDate) {
-                    const sentDate = vsParseDateSafeRB(rawSentDate);
-                    if (sentDate) {
-                        // Update Last Sent Date
-                        if (!creatorLastSentMap.has(creatorId) || sentDate > creatorLastSentMap.get(creatorId)) {
-                            creatorLastSentMap.set(creatorId, sentDate);
-                        }
-
-                        // Update Daily Count
-                        const dateString = vsFormatDateRB(sentDate); // Use consistent format for map key
-                        if (!creatorDailyCounts.has(creatorId)) {
-                             creatorDailyCounts.set(creatorId, new Map());
-                        }
-                        const dailyMap = creatorDailyCounts.get(creatorId);
-                        dailyMap.set(dateString, (dailyMap.get(dateString) || 0) + 1);
-                    }
-                }
-            }
-        });
-        Logger.log(`Found last sent dates for ${creatorLastSentMap.size} creators and daily counts.`);
-    } else {
-        Logger.log(`Creator_user_id column not found in log sheet, cannot calculate last sent activity or trends.`);
-    }
-
-    const creatorActivityData = [];
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Use start of today
-
-    // Generate dates for the last 10 days (today back to 9 days ago)
-    const trendDates = [];
-    for (let i = 0; i <= 9; i++) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
-        trendDates.push(date);
-    }
-
-    creatorLastSentMap.forEach((lastDate, creator) => {
-        const timeDiff = today.getTime() - lastDate.getTime();
-        const daysAgo = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // Calculate whole days
-
-        // Build Daily Trend String
-        const dailyMap = creatorDailyCounts.get(creator);
-        const trendValues = trendDates.map(date => {
-            const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
-            if (dayOfWeek === 0) return 'Sun';
-            if (dayOfWeek === 6) return 'Sat';
-            const dateString = vsFormatDateRB(date);
-            return dailyMap?.get(dateString) || 0;
-        });
-        const dailyTrend = trendValues.join(',');
-
-        creatorActivityData.push({ creator: creator, daysAgo: daysAgo, dailyTrend: dailyTrend });
-    });
-
-    // Sort by days ago (most recent first), then alphabetically
-    creatorActivityData.sort((a, b) => {
-        if (a.daysAgo !== b.daysAgo) {
-            return a.daysAgo - b.daysAgo;
-        }
-        return a.creator.localeCompare(b.creator);
-    });
-    // <<< End Creator Last Sent Activity Calculation >>>
-
     // <<< RESTORED: Deduplicate by Profile_id + Position_id, prioritizing by status rank >>>
     const profileIdIndex = logData.colIndices['Profile_id'];
     const positionIdIndex = logData.colIndices['Position_id'];
@@ -314,6 +240,80 @@ function AIR_DailySummarytoAP() {
     }
     // <<< END RESTORED BLOCK >>>
 
+    // <<< Calculate Creator Last Sent Activity & Daily Trends (using deduplicated data) >>>
+    const creatorLastSentMap = new Map();
+    const creatorDailyCounts = new Map(); // Map<CreatorId, Map<DateString, Count>>
+    const creatorIdx_Log = logData.colIndices.hasOwnProperty('Creator_user_id') ? logData.colIndices['Creator_user_id'] : -1;
+    const emailSentIdx_Log = logData.colIndices['Interview_email_sent_at']; // Already required
+
+    if (creatorIdx_Log !== -1) {
+        deduplicatedData.forEach(row => {
+            if (row.length > Math.max(creatorIdx_Log, emailSentIdx_Log)) {
+                const creatorId = row[creatorIdx_Log]?.trim();
+                const rawSentDate = row[emailSentIdx_Log];
+                if (creatorId && creatorId !== 'Unknown' && rawSentDate) {
+                    const sentDate = vsParseDateSafeRB(rawSentDate);
+                    if (sentDate) {
+                        // Update Last Sent Date
+                        if (!creatorLastSentMap.has(creatorId) || sentDate > creatorLastSentMap.get(creatorId)) {
+                            creatorLastSentMap.set(creatorId, sentDate);
+                        }
+
+                        // Update Daily Count
+                        const dateString = vsFormatDateRB(sentDate); // Use consistent format for map key
+                        if (!creatorDailyCounts.has(creatorId)) {
+                             creatorDailyCounts.set(creatorId, new Map());
+                        }
+                        const dailyMap = creatorDailyCounts.get(creatorId);
+                        dailyMap.set(dateString, (dailyMap.get(dateString) || 0) + 1);
+                    }
+                }
+            }
+        });
+        Logger.log(`Found last sent dates for ${creatorLastSentMap.size} creators and daily counts.`);
+    } else {
+        Logger.log(`Creator_user_id column not found in log sheet, cannot calculate last sent activity or trends.`);
+    }
+
+    const creatorActivityData = [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Use start of today
+
+    // Generate dates for the last 10 days (today back to 9 days ago)
+    const trendDates = [];
+    for (let i = 0; i <= 9; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        trendDates.push(date);
+    }
+
+    creatorLastSentMap.forEach((lastDate, creator) => {
+        const timeDiff = today.getTime() - lastDate.getTime();
+        const daysAgo = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // Calculate whole days
+
+        // Build Daily Trend String
+        const dailyMap = creatorDailyCounts.get(creator);
+        const trendValues = trendDates.map(date => {
+            const dayOfWeek = date.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+            if (dayOfWeek === 0) return 'Sun';
+            if (dayOfWeek === 6) return 'Sat';
+            const dateString = vsFormatDateRB(date);
+            return dailyMap?.get(dateString) || 0;
+        });
+        const dailyTrend = trendValues.join(',');
+
+        creatorActivityData.push({ creator: creator, daysAgo: daysAgo, dailyTrend: dailyTrend });
+    });
+
+    // Sort by days ago (most recent first), then alphabetically
+    creatorActivityData.sort((a, b) => {
+        if (a.daysAgo !== b.daysAgo) {
+            return a.daysAgo - b.daysAgo;
+        }
+        return a.creator.localeCompare(b.creator);
+    });
+    // <<< End Creator Last Sent Activity Calculation >>>
+
     // 3. Calculate Metrics (Uses RB calculator)
     const metrics = calculateCompanyMetricsRB(deduplicatedData, logData.colIndices);
     Logger.log('Successfully calculated company metrics with recruiter breakdown.');
@@ -376,6 +376,7 @@ function countFeedbackFromAllRows(allRows, colIndices, metrics) {
   }
   
   // Reset feedback and pending counts (they were calculated from deduplicated data)
+  // Note: recruiterSubmissionAwaited (AI_RECOMMENDED) is counted from deduplicated data, so we don't reset it here
   metrics.totalFeedbackSubmitted = 0;
   Object.keys(metrics.byRecruiter).forEach(rec => {
     metrics.byRecruiter[rec].feedbackSubmitted = 0;
@@ -431,7 +432,9 @@ function countFeedbackFromAllRows(allRows, colIndices, metrics) {
         metrics.byCountry[country].feedbackSubmitted++;
       }
       
-      // Note: Pending is now counted from deduplicated data (not from all rows)
+      // Note: AI_RECOMMENDED (CREATOR FEEDBACK REVIEW PENDING) is counted from deduplicated data
+      // in calculateCompanyMetricsRB(), not from all rows. This ensures consistency with other metrics.
+      // Note: Pending is also counted from deduplicated data (not from all rows)
       // This was moved to recalculatePendingFromDeduplicatedData() to match manual validation
     }
   });
@@ -643,7 +646,8 @@ function getLogSheetDataRB() {
       'Creator_user_id', 'Reviewer_email', 'Hiring_manager_name',
       'Days_pending_invitation', 'Interview Status_Real',
       'Position_approved_date',
-      'Feedback_template_name' // Added for filtering excluded templates
+      'Feedback_template_name', // Added for filtering excluded templates
+      '<48 Hours Since Invitation' // Added for Completion Rate calculation
   ];
 
   const colIndices = {};
@@ -1037,6 +1041,7 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
   const scheduledAtIdx = colIndices.hasOwnProperty('Schedule_start_time') ? colIndices['Schedule_start_time'] : -1;
   const candidateNameIdx = colIndices.hasOwnProperty('Candidate_name') ? colIndices['Candidate_name'] : -1;
   const feedbackStatusIdx = colIndices.hasOwnProperty('Feedback_status') ? colIndices['Feedback_status'] : -1;
+  const hours48Idx = colIndices.hasOwnProperty('<48 Hours Since Invitation') ? colIndices['<48 Hours Since Invitation'] : -1;
   
   // Debug: Log Feedback_status column status and collect unique values
   const uniqueFeedbackStatuses = new Set();
@@ -1111,21 +1116,30 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
     metrics.byRecruiter[recruiter].statusCounts[statusRaw] = (metrics.byRecruiter[recruiter].statusCounts[statusRaw] || 0) + 1; // <<< INCREMENT Recruiter Status Count
     metrics.byCreator[creator].statusCounts[statusRaw] = (metrics.byCreator[creator].statusCounts[statusRaw] || 0) + 1; // <<< INCREMENT Creator Status Count
 
-    // --- Calculate Avg Time Sent to Completion (Scheduled) ---
-    // <<< UPDATED: Only calculate for strictly COMPLETED interviews >>>
-    if (statusRaw === 'COMPLETED') {
+    // --- Calculate Avg Time Sent to Schedule (NEW LOGIC) ---
+    // Steps: 1) Deduplicate (already done - filteredRows is deduplicated)
+    //        2) Filter where Feedback_status = AI_RECOMMENDED OR SUBMITTED
+    //        3) Calculate: Schedule_start_time - Interview_email_sent_at (in minutes, convert to days)
+    const feedbackStatusNormalized = feedbackStatusRaw.toLowerCase().trim();
+    const isCompleted = feedbackStatusNormalized === 'submitted' || feedbackStatusNormalized === 'ai_recommended';
+    
+    if (isCompleted) {
         const candidateName = (candidateNameIdx !== -1 && row[candidateNameIdx]) ? row[candidateNameIdx] : 'Unknown Candidate';
         const scheduleDateForAvg = (scheduledAtIdx !== -1) ? vsParseDateSafeRB(row[scheduledAtIdx]) : null; // Use RB helper
         if (sentDate && scheduleDateForAvg) {
-            const daysDiff = vsCalculateDaysDifferenceRB(sentDate, scheduleDateForAvg);
-            if (daysDiff !== null) {
-                // <<< UPDATED: Only include post-Sept 10th interviews for average time calculation >>>
-                if (isPostSept10) {
-                    metrics.postSept10SentToScheduledDaysSum += daysDiff;
-                    metrics.postSept10SentToScheduledCount++;
-                    // <<< ADDED: Detailed log for post-Sept 10th avg time calculation >>>
-                    Logger.log(`PostSept10_AvgTimeCalc_Include: Candidate=[${candidateName}], Status=[${statusRaw}], Sent=[${sentDate.toISOString()}], Scheduled=[${scheduleDateForAvg.toISOString()}], DiffDays=[${daysDiff.toFixed(2)}]`);
-                }
+            // Calculate time difference in minutes
+            const timeDiffMs = scheduleDateForAvg.getTime() - sentDate.getTime();
+            const timeDiffMinutes = timeDiffMs / (1000 * 60);
+            
+            if (timeDiffMinutes > 0) {
+                // Convert minutes to days (1 day = 1440 minutes)
+                const timeDiffDays = timeDiffMinutes / 1440;
+                
+                metrics.postSept10SentToScheduledDaysSum += timeDiffDays;
+                metrics.postSept10SentToScheduledCount++;
+                
+                // Log for debugging
+                Logger.log(`AvgTimeCalc_Include: Candidate=[${candidateName}], Feedback_status=[${feedbackStatusRaw}], Sent=[${sentDate.toISOString()}], Scheduled=[${scheduleDateForAvg.toISOString()}], DiffMinutes=[${timeDiffMinutes.toFixed(2)}], DiffDays=[${timeDiffDays.toFixed(2)}]`);
             }
         }
     }
@@ -1151,8 +1165,8 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
 
     // --- Check if Completed (based on Feedback_status = SUBMITTED OR AI_RECOMMENDED) ---
     // Count completed based on Feedback_status = SUBMITTED OR AI_RECOMMENDED (feedback can only be submitted/recommended if interview is completed)
-    const feedbackStatusNormalized = feedbackStatusRaw.toLowerCase().trim();
-    const isCompleted = feedbackStatusNormalized === 'submitted' || feedbackStatusNormalized === 'ai_recommended';
+    // Note: feedbackStatusNormalized and isCompleted are already declared above for AVG TIME calculation
+    // Reuse the same variables here
     
     if (isCompleted) {
       metrics.totalCompleted++; // Increment original total completed
@@ -1201,14 +1215,19 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
        if (feedbackStatusIdx !== -1 && feedbackStatusRaw) {
          uniqueFeedbackStatuses.add(feedbackStatusRaw);
        }
+    }
 
-       // --- Check for Recruiter Submission Awaited (AI_RECOMMENDED in Feedback_status)
-       if (feedbackStatusIdx !== -1 && feedbackStatusRaw === RECRUITER_SUBMISSION_AWAITED_FEEDBACK) {
-           metrics.byJobFunction[jobFunc].recruiterSubmissionAwaited++;
-           // Note: No country-specific count for this yet
-           metrics.byRecruiter[recruiter].recruiterSubmissionAwaited++; // <<< INCREMENT Recruiter Submission Awaited
-           metrics.byCreator[creator].recruiterSubmissionAwaited++; // <<< INCREMENT Creator Submission Awaited
-       }
+    // --- Check for Recruiter Submission Awaited (AI_RECOMMENDED in Feedback_status)
+    // Count from deduplicated data (after deduplication by Profile_id + Position_id)
+    // Simple: Deduplicate, then count Feedback_status = AI_RECOMMENDED
+    // Make comparison case-insensitive to handle variations in the data
+    const feedbackStatusNormalizedForAI = feedbackStatusRaw.toLowerCase().trim();
+    const isAIRecommended = feedbackStatusNormalizedForAI === 'ai_recommended';
+    if (feedbackStatusIdx !== -1 && isAIRecommended) {
+        metrics.byJobFunction[jobFunc].recruiterSubmissionAwaited++;
+        // Note: No country-specific count for this yet
+        metrics.byRecruiter[recruiter].recruiterSubmissionAwaited++; // <<< INCREMENT Recruiter Submission Awaited
+        metrics.byCreator[creator].recruiterSubmissionAwaited++; // <<< INCREMENT Creator Submission Awaited
     }
   });
 
@@ -1217,6 +1236,27 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
     Logger.log(`Found ${uniqueFeedbackStatuses.size} unique Feedback_status values: ${Array.from(uniqueFeedbackStatuses).join(', ')}`);
     Logger.log(`Total feedback submitted count: ${metrics.totalFeedbackSubmitted}`);
   }
+
+  // --- Update COMPLETED count in Completion Status table ---
+  // For the Completion Status table, COMPLETED should be based on Feedback_status = AI_RECOMMENDED OR SUBMITTED
+  // Count from deduplicated data (same as other metrics)
+  let completedCountForStatusTable = 0;
+  filteredRows.forEach(row => {
+    if (feedbackStatusIdx !== -1 && row.length > feedbackStatusIdx) {
+      const feedbackStatusRaw = row[feedbackStatusIdx] ? String(row[feedbackStatusIdx]).trim() : '';
+      const feedbackStatusNormalized = feedbackStatusRaw.toLowerCase().trim();
+      const isCompleted = feedbackStatusNormalized === 'submitted' || feedbackStatusNormalized === 'ai_recommended';
+      if (isCompleted) {
+        completedCountForStatusTable++;
+      }
+    }
+  });
+  
+  // Replace COMPLETED count in interviewStatusDistribution (before it gets converted to object format)
+  // This will be converted to {count, percentage} format in the section below
+  // Note: This count is based on Feedback_status, not Interview_status_real
+  metrics.interviewStatusDistribution['COMPLETED'] = completedCountForStatusTable;
+  Logger.log(`Completion Status table: Updated COMPLETED count to ${completedCountForStatusTable} (based on Feedback_status = SUBMITTED OR AI_RECOMMENDED)`);
 
   // --- Calculate Final Rates and Averages ---
 
@@ -1238,19 +1278,68 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
       metrics.postSept10KpiCompletionRate = parseFloat(((metrics.postSept10MatureTotalCompleted / metrics.postSept10MatureTotalSent) * 100).toFixed(1));
   }
 
+  // --- Calculate Completion Rate for KPI Box (NEW LOGIC) ---
+  // Steps: 1) Deduplicate (already done - filteredRows is deduplicated)
+  //        2) Filter where "<48 Hours Since Invitation" = "No"
+  //        3) Calculate: (Feedback_status = AI_RECOMMENDED OR SUBMITTED) / (All rows) * 100
+  let completionRateDenominator = 0; // All rows where <48 Hours = No
+  let completionRateNumerator = 0;   // Completed rows (Feedback_status = AI_RECOMMENDED OR SUBMITTED) where <48 Hours = No
+  
+  if (hours48Idx !== -1) {
+    filteredRows.forEach(row => {
+      if (row.length > hours48Idx && row[hours48Idx]) {
+        const hours48Value = String(row[hours48Idx]).trim();
+        // Filter where "<48 Hours Since Invitation" = "No"
+        if (hours48Value.toUpperCase() === 'NO') {
+          completionRateDenominator++; // Count all rows
+          
+          // Check if completed (Feedback_status = AI_RECOMMENDED OR SUBMITTED)
+          if (feedbackStatusIdx !== -1 && row.length > feedbackStatusIdx && row[feedbackStatusIdx]) {
+            const feedbackStatusRaw = String(row[feedbackStatusIdx]).trim();
+            const feedbackStatusNormalized = feedbackStatusRaw.toLowerCase().trim();
+            const isCompleted = feedbackStatusNormalized === 'submitted' || feedbackStatusNormalized === 'ai_recommended';
+            if (isCompleted) {
+              completionRateNumerator++;
+            }
+          }
+        }
+      }
+    });
+    
+    // Calculate the completion rate
+    if (completionRateDenominator > 0) {
+      metrics.postSept10KpiCompletionRate = parseFloat(((completionRateNumerator / completionRateDenominator) * 100).toFixed(1));
+      Logger.log(`Completion Rate (KPI Box): ${completionRateNumerator} completed / ${completionRateDenominator} total (where <48 Hours = No) = ${metrics.postSept10KpiCompletionRate}%`);
+    } else {
+      Logger.log('WARNING: No rows found with "<48 Hours Since Invitation" = "No". Cannot calculate completion rate.');
+      metrics.postSept10KpiCompletionRate = 0;
+    }
+  } else {
+    Logger.log('WARNING: "<48 Hours Since Invitation" column not found. Using fallback calculation.');
+    // Fallback to old calculation if column not found
+    if (metrics.postSept10MatureTotalSent > 0) {
+      metrics.postSept10KpiCompletionRate = parseFloat(((metrics.postSept10MatureTotalCompleted / metrics.postSept10MatureTotalSent) * 100).toFixed(1));
+    }
+  }
+
   // Calculate other original rates
   if (metrics.totalSent > 0) {
       metrics.sentToScheduledRate = parseFloat(((metrics.totalScheduled / metrics.totalSent) * 100).toFixed(1));
       // Update status distribution calculation (uses totalSent)
+      // Note: COMPLETED count was already updated above to use Feedback_status = AI_RECOMMENDED OR SUBMITTED
+      // Store the COMPLETED count before converting to object format
+      const completedCountForTable = metrics.interviewStatusDistribution['COMPLETED'] || 0;
       const statusCountsTemp = { ...metrics.interviewStatusDistribution };
       metrics.interviewStatusDistribution = {};
       for (const status in statusCountsTemp) {
-          const count = statusCountsTemp[status];
+          // Use the stored COMPLETED count if this is the COMPLETED status
+          const count = (status === 'COMPLETED') ? completedCountForTable : statusCountsTemp[status];
           metrics.interviewStatusDistribution[status] = {
               count: count,
               percentage: parseFloat(((count / metrics.totalSent) * 100).toFixed(1))
           };
       }
+      Logger.log(`Completion Status table: Final COMPLETED count after conversion: ${metrics.interviewStatusDistribution['COMPLETED'] ? metrics.interviewStatusDistribution['COMPLETED'].count : 'NOT SET'}`);
   }
   if (metrics.totalScheduled > 0) {
       metrics.scheduledToCompletedRate = parseFloat(((metrics.totalCompleted / metrics.totalScheduled) * 100).toFixed(1));
@@ -1271,11 +1360,13 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
        metrics.avgTimeToScheduleDays = null;
    }
    
-   // Calculate Post-Sept 10th Average Time to Schedule
+   // Calculate Average Time to Schedule (NEW LOGIC: based on Feedback_status = AI_RECOMMENDED OR SUBMITTED)
    if (metrics.postSept10SentToScheduledCount > 0) {
        metrics.postSept10AvgTimeToScheduleDays = parseFloat((metrics.postSept10SentToScheduledDaysSum / metrics.postSept10SentToScheduledCount).toFixed(1));
+       Logger.log(`AvgTimeCalc_Summary: Total Days Sum = ${metrics.postSept10SentToScheduledDaysSum.toFixed(2)}, Count = ${metrics.postSept10SentToScheduledCount}, Avg Days = ${metrics.postSept10AvgTimeToScheduleDays}`);
    } else {
        metrics.postSept10AvgTimeToScheduleDays = null;
+       Logger.log('AvgTimeCalc_Summary: No completed interviews found (Feedback_status = AI_RECOMMENDED OR SUBMITTED) with valid schedule dates.');
    }
     if (metrics.completedToFeedbackCount > 0) {
         metrics.avgCompletedToFeedbackDays = parseFloat((metrics.completedToFeedbackDaysSum / metrics.completedToFeedbackCount).toFixed(1));
@@ -1410,7 +1501,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
   }
   
   // AI Insights feature removed
-  // Helper to generate timeseries table (limited to last 7 days)
+  // Helper to generate timeseries table (limited to last 5 days)
   const generateTimeseriesTable = (dailyCounts) => {
       const sortedDates = Object.keys(dailyCounts).sort((a, b) => {
           try {
@@ -1421,18 +1512,18 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
           } catch (e) { return b.localeCompare(a); }
       });
 
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      sevenDaysAgo.setHours(0, 0, 0, 0);
+      const fiveDaysAgo = new Date();
+      fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
+      fiveDaysAgo.setHours(0, 0, 0, 0);
 
       const filteredDates = sortedDates.filter(dateStr => {
           try {
               const date = new Date(dateStr.replace(/(\\d{2})-(\\w{3})-(\\d{2})/, '$2 $1, 20$3'));
-              return date >= sevenDaysAgo;
+              return date >= fiveDaysAgo;
           } catch (e) { return false; }
       });
 
-      if (filteredDates.length === 0) return '<p style="font-size: 11px; color: #999; margin-top: 12px; text-align: center;">No invitations in last 7 days.</p>';
+      if (filteredDates.length === 0) return '<p style="font-size: 11px; color: #999; margin-top: 12px; text-align: center;">No invitations in last 5 days.</p>';
 
       let tableHtml = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;"><thead><tr><th style="padding: 8px; text-align: left; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Date</th><th style="padding: 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Count</th></tr></thead><tbody>';
       filteredDates.forEach((date, index) => {
@@ -1529,7 +1620,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                   </td>
                   <td width="50%" style="vertical-align: top; padding: 0;">
                      <div style="background: #ffffff; padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                       <div style="font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 12px; letter-spacing: -0.2px;">Daily Invitations (7d)</div>
+                       <div style="font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 12px; letter-spacing: -0.2px;">Daily Invitations Trend (5d)</div>
                        ${generateTimeseriesTable(metrics.dailySentCounts)}
                     </div>
                   </td>
@@ -1821,7 +1912,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
           <tr>
             <td style="padding: 24px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-top: 1px solid #e0e0e0;">
               <div style="text-align: center; font-size: 10px; color: #666; line-height: 1.6;">
-                <div style="margin-bottom: 4px;">*Avg Time uses Schedule Start Date as completion proxy (post-Sept 10, 2025)</div>
+                <div style="margin-bottom: 4px;">*Avg Time: Time from invitation sent to schedule start (Feedback_status = AI_RECOMMENDED OR SUBMITTED)</div>
                 <div style="margin-bottom: 4px;">**Completion Rate excludes invites sent < 48 hours. Table % includes all invites.</div>
                 <div style="margin-bottom: 4px; font-weight: 600;">Overall completion rate: ${metrics.completionRateOriginal}%</div>
                 <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.1); color: #999;">
