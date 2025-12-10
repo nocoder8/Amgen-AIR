@@ -1,13 +1,14 @@
 // AIR Volkscience - Exec Summary - Company-Level AI Interview Analytics Script v1.0 (Recruiter Breakdown)
 // Company: Amgen
-// To: Pavan Kumar
-// When: Daily, 10 AM (Can be adjusted)
+// To: Multiple recipients (see VS_EMAIL_RECIPIENT_RB)
+// When: Weekly, every Wednesday at 5 PM IST
 // This script analyzes data from the Enriched sheet to provide company-wide insights
 // including a breakdown by recruiter.
 
 // --- Configuration ---
-const VS_EMAIL_RECIPIENT_RB = 'pkumar@eightfold.ai'; // <<< UPDATE EMAIL RECIPIENT
-const VS_EMAIL_CC_RB = 'pkumar@eightfold.ai'; // Optional CC
+// Weekly report recipients (every Wednesday at 5 PM IST)
+const VS_EMAIL_RECIPIENT_RB = 'Fahmad02@amgen.com,adeblaey@amgen.com,apatangay@eightfold.ai,siddhartha.garg@eightfold.ai,pkumar@eightfold.ai,nmoroianu@eightfold.ai,mmathihalli@eightfold.ai'; // <<< Weekly report recipients
+const VS_EMAIL_CC_RB = ''; // Optional CC (empty for now)
 // Assuming the Log Enhanced sheet is in a separate Spreadsheet
 const VS_LOG_SHEET_SPREADSHEET_URL_RB = 'https://docs.google.com/spreadsheets/d/1VxSsCRHdxpfhVTmrLW_BJjqPD59rjEFnHiXxrkL79y4/edit?gid=0#gid=0'; // <<< VERIFY SPREADSHEET URL
 const VS_LOG_SHEET_NAME_RB = 'Enriched'; // <<< VERIFY SHEET NAME
@@ -72,57 +73,74 @@ function AIR_DailySummarytoAP() {
     let recruiterValidationSheets = null;
     
     if (APP_SHEET_SPREADSHEET_URL_RB && APP_SHEET_NAME_RB) {
-        try {
-            const appData = getApplicationDataForChartRB();
-            if (appData && appData.rows) {
-                Logger.log(`Successfully retrieved ${appData.rows.length} rows from application sheet.`);
-                adoptionChartData = calculateAdoptionMetricsForChartRB(appData.rows, appData.colIndices);
-                Logger.log(`Successfully calculated adoption chart metrics.`);
-                
-                // Calculate hiring metrics
-                hiringMetrics = calculateHiringMetricsFromAppData(appData.rows, appData.colIndices);
-                Logger.log(`Successfully calculated hiring metrics.`);
-                
-                // Calculate AI coverage metrics
-                aiCoverageMetrics = calculateAICoverageMetricsRB(appData.rows, appData.colIndices);
-                if (aiCoverageMetrics) {
-                    Logger.log(`Successfully calculated AI coverage metrics. Total eligible: ${aiCoverageMetrics.totalEligible}, Total AI interviews: ${aiCoverageMetrics.totalAIInterviews}, Overall percentage: ${aiCoverageMetrics.overallPercentage}%`);
-                } else {
-                    Logger.log(`WARNING: AI coverage metrics calculation returned null. This could be due to missing required columns.`);
-                }
-                
-                // Create validation sheet for candidate count comparison
-                try {
-                    validationSheetUrl = createCandidateCountValidationSheet(appData.rows, appData.colIndices);
-                    Logger.log(`Successfully created validation sheet: ${validationSheetUrl}`);
-                } catch (validationError) {
-                    Logger.log(`Warning: Could not create validation sheet: ${validationError.toString()}`);
-                }
-                
-                // Create detailed validation sheets for each recruiter
-                try {
-                    recruiterValidationSheets = createAllRecruiterValidationSheets(appData.rows, appData.colIndices);
-                    if (recruiterValidationSheets) {
-                        Logger.log(`Successfully created ${recruiterValidationSheets.successfulSheets} recruiter validation sheets`);
-                    } else {
-                        Logger.log(`Warning: Could not create recruiter validation sheets`);
-                    }
-                } catch (validationError) {
-                    Logger.log(`Warning: Could not create recruiter validation sheets: ${validationError.toString()}`);
-                }
-                
-                // Logger.log(`Adoption Chart Data: ${JSON.stringify(adoptionChartData, null, 2)}`);
+    try {
+        const appData = getApplicationDataForChartRB();
+        if (appData && appData.rows) {
+            Logger.log(`Successfully retrieved ${appData.rows.length} rows from application sheet.`);
+            adoptionChartData = calculateAdoptionMetricsForChartRB(appData.rows, appData.colIndices);
+            Logger.log(`Successfully calculated adoption chart metrics.`);
+            
+            // Calculate hiring metrics
+            hiringMetrics = calculateHiringMetricsFromAppData(appData.rows, appData.colIndices);
+            Logger.log(`Successfully calculated hiring metrics.`);
+            
+            // Calculate AI coverage metrics
+            aiCoverageMetrics = calculateAICoverageMetricsRB(appData.rows, appData.colIndices);
+            if (aiCoverageMetrics) {
+                Logger.log(`Successfully calculated AI coverage metrics. Total eligible: ${aiCoverageMetrics.totalEligible}, Total AI interviews: ${aiCoverageMetrics.totalAIInterviews}, Overall percentage: ${aiCoverageMetrics.overallPercentage}%`);
             } else {
-                Logger.log(`WARNING: No data retrieved from application sheet. Adoption chart, hiring metrics, and AI coverage will be skipped.`);
+                Logger.log(`WARNING: AI coverage metrics calculation returned null. This could be due to missing required columns.`);
             }
-        } catch (appError) {
-            Logger.log(`ERROR retrieving or processing application data for adoption chart: ${appError.toString()}`);
-            // Continue without adoption chart data
-            // Optional: Send notification about this specific failure?
-            sendVsErrorNotificationRB(`Error getting data for Adoption Chart from ${APP_SHEET_NAME_RB}`, appError.stack);
+            
+            // Create validation sheet for candidate count comparison
+            try {
+                validationSheetUrl = createCandidateCountValidationSheet(appData.rows, appData.colIndices);
+                Logger.log(`Successfully created validation sheet: ${validationSheetUrl}`);
+            } catch (validationError) {
+                Logger.log(`Warning: Could not create validation sheet: ${validationError.toString()}`);
+            }
+            
+            // Create detailed validation sheets for each recruiter
+            try {
+                recruiterValidationSheets = createAllRecruiterValidationSheets(appData.rows, appData.colIndices);
+                if (recruiterValidationSheets) {
+                    Logger.log(`Successfully created ${recruiterValidationSheets.successfulSheets} recruiter validation sheets`);
+                } else {
+                    Logger.log(`Warning: Could not create recruiter validation sheets`);
+                }
+            } catch (validationError) {
+                Logger.log(`Warning: Could not create recruiter validation sheets: ${validationError.toString()}`);
+            }
+            
+            // Logger.log(`Adoption Chart Data: ${JSON.stringify(adoptionChartData, null, 2)}`);
+        } else {
+            Logger.log(`WARNING: No data retrieved from application sheet. Adoption chart, hiring metrics, and AI coverage will be skipped.`);
+        }
+    } catch (appError) {
+        Logger.log(`ERROR retrieving or processing application data for adoption chart: ${appError.toString()}`);
+        // Continue without adoption chart data
+        // Optional: Send notification about this specific failure?
+        sendVsErrorNotificationRB(`Error getting data for Adoption Chart from ${APP_SHEET_NAME_RB}`, appError.stack);
         }
     } else {
         Logger.log(`Application sheet not configured. Skipping adoption chart, hiring metrics, and AI coverage sections.`);
+    }
+
+    // 1c. Get Adoption By Recruiter Data (for stacked bar chart) - MODULAR: Can be removed if needed
+    let adoptionByRecruiterData = null;
+    try {
+        Logger.log(`=== Starting Adoption By Recruiter Data Retrieval ===`);
+        adoptionByRecruiterData = getAdoptionByRecruiterDataRB();
+        if (adoptionByRecruiterData && adoptionByRecruiterData.length > 0) {
+            Logger.log(`✅ Successfully retrieved ${adoptionByRecruiterData.length} recruiters from Adoption_By_Recruiter sheet.`);
+            Logger.log(`First few recruiters: ${adoptionByRecruiterData.slice(0, 3).map(r => r.recruiter_name).join(', ')}`);
+        } else {
+            Logger.log(`⚠️ WARNING: No data retrieved from Adoption_By_Recruiter sheet. adoptionByRecruiterData = ${adoptionByRecruiterData}`);
+        }
+    } catch (adoptionError) {
+        Logger.log(`❌ ERROR retrieving Adoption_By_Recruiter data: ${adoptionError.toString()}`);
+        Logger.log(`Stack trace: ${adoptionError.stack}`);
+        // Continue without adoption data
     }
 
     // 2. Filter Data by Time Range (using Interview_email_sent_at)
@@ -176,7 +194,7 @@ function AIR_DailySummarytoAP() {
     const groupedData = {}; // Key: "profileId_positionId", Value: { bestRank: rank, row: rowData }
     let skippedRowCount = 0;
 
-    finalFilteredData.forEach(row => {
+        finalFilteredData.forEach(row => {
         // Ensure row has the necessary columns
         if (!row || row.length <= profileIdIndex || row.length <= positionIdIndex || row.length <= statusIndex) {
             skippedRowCount++;
@@ -335,12 +353,12 @@ function AIR_DailySummarytoAP() {
     // Logger.log(`Calculated Metrics: ${JSON.stringify(metrics)}`); // Optional: Log detailed metrics
 
     // 4. Create HTML Report (Uses RB creator) - Pass adoption, activity data, and log creator index
-    const htmlContent = createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorActivityData, creatorIdx_Log, hiringMetrics, validationSheetUrl, aiCoverageMetrics, recruiterValidationSheets);
+    const htmlContent = createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorActivityData, creatorIdx_Log, hiringMetrics, validationSheetUrl, aiCoverageMetrics, recruiterValidationSheets, adoptionByRecruiterData);
     Logger.log('Successfully generated HTML report content.');
 
     // 5. Send Email (Uses RB functions/config)
     // Set static subject line for this specific report
-    const reportTitle = `AI Interviewer adoption at Amgen: Weekly Summary`; // <<< Renamed Subject
+    const reportTitle = `Eightfold AI Interviewer at Amgen: Weekly Adoption Summary`; // <<< Updated Subject
     sendVsEmailRB(VS_EMAIL_RECIPIENT_RB, VS_EMAIL_CC_RB, reportTitle, htmlContent);
 
     Logger.log(`--- AI Recruiter Adoption: Daily Summary generated and sent successfully! ---`); // Updated log message
@@ -838,6 +856,378 @@ function getApplicationDataForChartRB() {
   return { rows, headers, colIndices: appColIndices };
 }
 
+// ====================================================================================================
+// MODULE: Adoption By Recruiter Bar Chart (Modular - Can be removed if needed)
+// ====================================================================================================
+
+/**
+ * Reads data from the Adoption_By_Recruiter sheet in the same spreadsheet.
+ * Headers are in row 2, data starts from row 3.
+ * @returns {Array<object>|null} Array of objects with recruiter adoption data or null if error.
+ */
+function getAdoptionByRecruiterDataRB() {
+  Logger.log(`--- Starting getAdoptionByRecruiterDataRB ---`);
+  
+  Logger.log(`Attempting to open spreadsheet: ${VS_LOG_SHEET_SPREADSHEET_URL_RB}`);
+  let spreadsheet;
+  try {
+    spreadsheet = SpreadsheetApp.openByUrl(VS_LOG_SHEET_SPREADSHEET_URL_RB);
+    Logger.log(`Opened spreadsheet: ${spreadsheet.getName()}`);
+  } catch (e) {
+    Logger.log(`Error opening spreadsheet by URL: ${e}`);
+    return null;
+  }
+
+  // List all available sheets for debugging
+  const allSheets = spreadsheet.getSheets();
+  const sheetNames = allSheets.map(s => s.getName());
+  Logger.log(`Available sheets in spreadsheet: ${sheetNames.join(', ')}`);
+  
+  // Try multiple possible sheet name variations (case-insensitive)
+  let sheet = null;
+  const targetSheetName = 'Adoption_By_Recruiter';
+  
+  // First try exact match
+  sheet = spreadsheet.getSheetByName(targetSheetName);
+  
+  // If not found, try case-insensitive search
+  if (!sheet) {
+    Logger.log(`Sheet "${targetSheetName}" not found with exact match. Trying case-insensitive search...`);
+    for (let i = 0; i < allSheets.length; i++) {
+      if (allSheets[i].getName().toLowerCase() === targetSheetName.toLowerCase()) {
+        sheet = allSheets[i];
+        Logger.log(`Found sheet with case-insensitive match: "${sheet.getName()}"`);
+        break;
+      }
+    }
+  }
+  
+  // If still not found, try variations
+  if (!sheet) {
+    const variations = ['Adoption By Recruiter', 'adoption_by_recruiter', 'Adoption by Recruiter', 'Adoption_By_Recruiter '];
+    for (const variant of variations) {
+      sheet = spreadsheet.getSheetByName(variant);
+      if (sheet) {
+        Logger.log(`Found sheet with variation "${variant}": "${sheet.getName()}"`);
+        break;
+      }
+    }
+  }
+  
+  if (!sheet) {
+    Logger.log(`ERROR: Sheet "${targetSheetName}" not found with any method.`);
+    Logger.log(`Available sheet names: ${JSON.stringify(sheetNames)}`);
+    return null;
+  }
+  
+  Logger.log(`✅ Found sheet: "${sheet.getName()}" (Sheet ID: ${sheet.getSheetId()})`);
+
+  const dataRange = sheet.getDataRange();
+  const data = dataRange.getValues();
+
+  // Headers are in row 2 (index 1), data starts from row 3 (index 2)
+  if (data.length < 3) {
+    Logger.log(`Not enough data in Adoption_By_Recruiter sheet (expected headers in row 2).`);
+    return null;
+  }
+
+  const headers = data[1].map(String); // Headers from row 2
+  const rows = data.slice(2); // Data from row 3 onwards
+
+  Logger.log(`DEBUG: Total rows in sheet: ${data.length}`);
+  Logger.log(`DEBUG: Headers row (row 2): ${JSON.stringify(headers)}`);
+  Logger.log(`DEBUG: Data rows (starting from row 3): ${rows.length} rows`);
+  
+  if (rows.length === 0) {
+    Logger.log(`WARNING: No data rows found in Adoption_By_Recruiter sheet (only headers in row 2)`);
+    return null;
+  }
+  
+  // Log first data row for debugging
+  if (rows.length > 0) {
+    Logger.log(`DEBUG: First data row sample: ${JSON.stringify(rows[0].slice(0, 6))}`);
+  }
+
+  // Find column indices (case-insensitive matching)
+  const findColIndex = (colName) => {
+    const lowerColName = colName.toLowerCase();
+    for (let i = 0; i < headers.length; i++) {
+      if (headers[i].toLowerCase() === lowerColName) {
+        return i;
+      }
+    }
+    return -1;
+  };
+
+  const colIndices = {
+    recruiter_name: findColIndex('recruiter_name'),
+    recruiter_email: findColIndex('recruiter_email'),
+    ai_interview_count: findColIndex('ai_interview_count'),
+    eligible_applications: findColIndex('eligible_applications'),
+    missed_opportunities: findColIndex('missed_opportunities'),
+    ai_adoption_percentage: findColIndex('ai_adoption_percentage')
+  };
+
+  Logger.log(`Column indices found: ${JSON.stringify(colIndices)}`);
+
+  // Check for required columns
+  if (colIndices.recruiter_name === -1 || colIndices.ai_interview_count === -1 || colIndices.eligible_applications === -1) {
+    Logger.log(`ERROR: Missing required columns in Adoption_By_Recruiter sheet.`);
+    Logger.log(`Required: recruiter_name=${colIndices.recruiter_name}, ai_interview_count=${colIndices.ai_interview_count}, eligible_applications=${colIndices.eligible_applications}`);
+    Logger.log(`Available headers: ${JSON.stringify(headers)}`);
+    return null;
+  }
+
+  // Parse data into objects
+  const adoptionData = [];
+  const excludedRecruiters = ['Faran Ahmad']; // Recruiters to exclude from chart
+  rows.forEach((row, index) => {
+    if (row.length > Math.max(colIndices.recruiter_name, colIndices.ai_interview_count, colIndices.eligible_applications)) {
+      const recruiterName = row[colIndices.recruiter_name] ? String(row[colIndices.recruiter_name]).trim() : '';
+      // Skip excluded recruiters
+      if (excludedRecruiters.some(excluded => recruiterName.toLowerCase() === excluded.toLowerCase())) {
+        Logger.log(`Skipping excluded recruiter: ${recruiterName}`);
+        return;
+      }
+      if (recruiterName) { // Only include rows with recruiter name
+        const aiCount = colIndices.ai_interview_count !== -1 ? parseFloat(row[colIndices.ai_interview_count]) || 0 : 0;
+        const eligible = colIndices.eligible_applications !== -1 ? parseFloat(row[colIndices.eligible_applications]) || 0 : 0;
+        const percentage = colIndices.ai_adoption_percentage !== -1 ? parseFloat(row[colIndices.ai_adoption_percentage]) || 0 : 0;
+        
+        adoptionData.push({
+          recruiter_name: recruiterName,
+          recruiter_email: colIndices.recruiter_email !== -1 && row[colIndices.recruiter_email] ? String(row[colIndices.recruiter_email]).trim() : '',
+          ai_interview_count: aiCount,
+          eligible_applications: eligible,
+          missed_opportunities: colIndices.missed_opportunities !== -1 ? parseFloat(row[colIndices.missed_opportunities]) || 0 : 0,
+          ai_adoption_percentage: percentage
+        });
+        
+        // Log first few rows for debugging
+        if (index < 3) {
+          Logger.log(`Parsed row ${index + 1}: ${recruiterName}, AI=${aiCount}, Eligible=${eligible}, %=${percentage}`);
+        }
+      }
+    }
+  });
+
+  // Sort by ai_adoption_percentage (descending)
+  adoptionData.sort((a, b) => b.ai_adoption_percentage - a.ai_adoption_percentage);
+
+  Logger.log(`Successfully parsed ${adoptionData.length} recruiters from Adoption_By_Recruiter sheet.`);
+  if (adoptionData.length > 0) {
+    Logger.log(`Sample: First recruiter = ${adoptionData[0].recruiter_name}, AI=${adoptionData[0].ai_interview_count}, Eligible=${adoptionData[0].eligible_applications}`);
+  }
+  return adoptionData;
+}
+
+/**
+ * Generates HTML for a stacked bar chart showing AI Interview Adoption by Recruiter.
+ * Matches the style of generateAICoverageBarChartHtml from the reference script.
+ * @param {Array<object>} adoptionData Array of objects with recruiter adoption data.
+ * @returns {string} HTML string for the bar chart.
+ */
+function generateAdoptionByRecruiterBarChartHtml(adoptionData) {
+  if (!adoptionData || adoptionData.length === 0) {
+    return `
+      <div style="background-color: #fff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 15px;">
+        <div style="font-weight: bold; font-size: 16px; color: #3f51b5; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee;">📊 AI Interview Adoption by Recruiter</div>
+        <div style="text-align: center; padding: 20px; color: #666; font-size: 14px;">No adoption data available.</div>
+      </div>
+    `;
+  }
+
+  // Calculate max value for scaling (from eligible_applications)
+  const maxEligible = Math.max(...adoptionData.map(d => d.eligible_applications));
+
+  let chartHtml = `
+    <div style="background-color: #fff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 15px;">
+      <div style="font-weight: bold; font-size: 16px; color: #3f51b5; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #eee;">📊 AI Interview Adoption by Recruiter</div>
+      <p style="font-size: 12px; color: #666; margin-bottom: 15px;">
+        Stacked bars show eligible applications (grey) and AI interviews conducted (green).
+        Sorted by AI adoption percentage.
+      </p>
+      <p style="font-size: 11px; color: #666; margin-bottom: 15px; line-height: 1.5;">
+        Eligible applications include candidates on open India positions who either received an AI Interview in the last 90 days or were progressed beyond the REVIEW stage without an AI Interview. Candidates rejected directly from REVIEW or still in REVIEW without an AI Interview are not counted, because those were intentional "no-go" decisions. This view simply highlights where AI is already helping and where it could save even more recruiter time going forward.
+      </p>
+      
+      <div style="margin: 20px 0;">
+  `;
+
+  // Generate stacked bars
+  adoptionData.forEach((data, index) => {
+    const eligible = data.eligible_applications;
+    const aiCount = data.ai_interview_count;
+    const missed = eligible - aiCount; // Grey portion = eligible - AI interviews
+    const percentage = data.ai_adoption_percentage;
+    
+    // Calculate bar widths (max width 300px, matching reference script)
+    const maxBarWidth = 300;
+    const barWidth = (eligible / maxEligible) * maxBarWidth;
+    
+    // Calculate natural/proportional green segment width
+    const aiWidthNatural = eligible > 0 ? (aiCount / eligible) * barWidth : 0;
+    
+    // Set minimum width for green segment to ensure numbers are always visible (25px minimum)
+    const minGreenWidth = 25;
+    const aiWidth = aiCount > 0 ? Math.max(minGreenWidth, aiWidthNatural) : 0;
+    
+    // Grey segment adjusts to fill remaining space (may be smaller than proportional if green expanded)
+    const missedWidth = Math.max(0, barWidth - aiWidth);
+    
+    // Truncate long recruiter names (matching reference script)
+    const displayName = data.recruiter_name.length > 20 ? data.recruiter_name.substring(0, 17) + '...' : data.recruiter_name;
+    
+    chartHtml += `
+      <div style="margin-bottom: 15px;">
+        <div style="display: flex; align-items: center; margin-bottom: 5px;">
+          <div style="width: 120px; font-size: 12px; font-weight: bold; text-align: right; padding-right: 10px; overflow: hidden; text-overflow: ellipsis;" title="${data.recruiter_name}">
+            ${displayName}
+          </div>
+          <div style="flex: 1; display: flex; align-items: center;">
+            <div style="width: ${barWidth}px; height: 25px; display: flex; border: 1px solid #ccc; border-radius: 3px; overflow: hidden;">
+              ${missedWidth > 0 ? `<div style="width: ${missedWidth}px; background-color: #9e9e9e; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; font-weight: bold;" title="Eligible (no AI): ${missed}">${missed > 0 && missedWidth >= 25 ? missed : ''}</div>` : ''}
+              ${aiWidth > 0 ? `<div style="width: ${aiWidth}px; background-color: #4CAF50; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; font-weight: bold;" title="AI Interviews: ${aiCount}">${aiCount}</div>` : ''}
+            </div>
+            <div style="margin-left: 10px; font-size: 11px; color: #666; min-width: 80px;">
+              ${percentage.toFixed(1)}% (${aiCount}/${eligible})
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  // Add legend (matching reference script style)
+  chartHtml += `
+      </div>
+      
+      <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px; font-size: 12px;">
+        <div style="display: flex; align-items: center; margin-right: 20px;">
+          <div style="width: 20px; height: 15px; background-color: #4CAF50; margin-right: 8px; border: 1px solid #ccc;"></div>
+          <span>AI Interviews (Green)</span>
+        </div>
+        <div style="display: flex; align-items: center;">
+          <div style="width: 20px; height: 15px; background-color: #9e9e9e; margin-right: 8px; border: 1px solid #ccc;"></div>
+          <span>Eligible Applications (Grey)</span>
+        </div>
+      </div>
+      
+      <p style="font-size: 11px; color: #666; margin-top: 15px; text-align: center;">
+        Total eligible applications: ${adoptionData.reduce((sum, d) => sum + d.eligible_applications, 0)} | 
+        Total AI interviews: ${adoptionData.reduce((sum, d) => sum + d.ai_interview_count, 0)} | 
+        Overall adoption: <strong>${adoptionData.length > 0 ? ((adoptionData.reduce((sum, d) => sum + d.ai_interview_count, 0) / adoptionData.reduce((sum, d) => sum + d.eligible_applications, 0)) * 100).toFixed(1) : 0}%</strong>
+      </p>
+    </div>
+  `;
+
+  return chartHtml;
+}
+
+// ====================================================================================================
+// END MODULE: Adoption By Recruiter Bar Chart
+// ====================================================================================================
+
+/**
+ * Converts Amgen logo image to base64 data URI for email embedding.
+ * Logo files are stored in a Google Drive folder.
+ * @returns {string} HTML img tag with base64 encoded logo or empty string if error.
+ */
+function getAmgenLogoBase64() {
+  try {
+    // Folder ID from Google Drive link
+    const folderId = '17vBbMnN5OvtHhRKPiHG9ZzNYD6BCMOal';
+    const folder = DriveApp.getFolderById(folderId);
+    const files = folder.getFilesByName('amgen-logo-og.jpg');
+    
+    if (files.hasNext()) {
+      const file = files.next();
+      const blob = file.getBlob();
+      const base64 = Utilities.base64Encode(blob.getBytes());
+      const mimeType = blob.getContentType();
+      return `<img src="data:${mimeType};base64,${base64}" alt="Amgen Logo" style="max-height: 50px; width: auto; display: block;" />`;
+    } else {
+      Logger.log('Amgen logo file not found in folder');
+      return '';
+    }
+  } catch (e) {
+    Logger.log(`Error loading Amgen logo: ${e.toString()}`);
+    return ''; // Return empty if logo can't be loaded
+  }
+}
+
+/**
+ * Converts Eightfold logo image to base64 data URI for email embedding.
+ * Logo files are stored in a Google Drive folder.
+ * @returns {string} HTML img tag with base64 encoded logo or empty string if error.
+ */
+function getEightfoldLogoBase64() {
+  try {
+    // Folder ID from Google Drive link
+    const folderId = '17vBbMnN5OvtHhRKPiHG9ZzNYD6BCMOal';
+    const folder = DriveApp.getFolderById(folderId);
+    const files = folder.getFilesByName('Eightfold logo_color.png');
+    
+    if (files.hasNext()) {
+      const file = files.next();
+      const blob = file.getBlob();
+      const base64 = Utilities.base64Encode(blob.getBytes());
+      const mimeType = blob.getContentType();
+      return `<img src="data:${mimeType};base64,${base64}" alt="Eightfold AI Logo" style="max-height: 50px; width: auto; display: block;" />`;
+  } else {
+      Logger.log('Eightfold logo file not found in folder');
+      return '';
+    }
+  } catch (e) {
+    Logger.log(`Error loading Eightfold logo: ${e.toString()}`);
+    return ''; // Return empty if logo can't be loaded
+  }
+}
+
+/**
+ * Sets up a time-driven trigger to send the weekly report every Wednesday at 5 PM IST.
+ * Run this function once to create the trigger. It will delete any existing triggers for AIR_DailySummarytoAP first.
+ * 
+ * Note: Google Apps Script uses the script's timezone. Make sure your script's timezone is set to IST (Asia/Kolkata).
+ * To check/set timezone: File > Project settings > Time zone
+ * 
+ * IST is UTC+5:30, so 5 PM IST = 11:30 AM UTC
+ */
+function setupWeeklyReportTrigger() {
+  try {
+    // Delete any existing triggers for this function
+    const triggers = ScriptApp.getProjectTriggers();
+    triggers.forEach(trigger => {
+      if (trigger.getHandlerFunction() === 'AIR_DailySummarytoAP') {
+        ScriptApp.deleteTrigger(trigger);
+        Logger.log('Deleted existing trigger for AIR_DailySummarytoAP');
+      }
+    });
+
+    // Create a new weekly trigger for Wednesdays at 5 PM IST
+    // Note: The time is based on the script's timezone setting
+    // If script timezone is IST: use hour 17 (5 PM)
+    // If script timezone is UTC: use hour 11, minute 30 (11:30 AM UTC = 5 PM IST)
+    
+    // Using ScriptApp.WeekDay.WEDNESDAY and hour 17 (5 PM) assuming script timezone is IST
+    const trigger = ScriptApp.newTrigger('AIR_DailySummarytoAP')
+      .timeBased()
+      .onWeekDay(ScriptApp.WeekDay.WEDNESDAY)
+      .atHour(17) // 5 PM in script's timezone
+      .create();
+
+    Logger.log(`Weekly trigger created successfully!`);
+    Logger.log(`Trigger ID: ${trigger.getUniqueId()}`);
+    Logger.log(`The report will be sent every Wednesday at 5 PM (based on script timezone).`);
+    Logger.log(`IMPORTANT: Make sure your script's timezone is set to IST (Asia/Kolkata) in File > Project settings.`);
+    
+    return 'Trigger created successfully!';
+  } catch (e) {
+    Logger.log(`Error creating trigger: ${e.toString()}`);
+    throw e;
+  }
+}
+
 /**
  * Calculates adoption metrics based on application data, mirroring the weekly report logic.
  * Filters for post-launch, >=4 match score (if possible), and calculates adoption based on eligibility.
@@ -1136,7 +1526,7 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
                 const timeDiffDays = timeDiffMinutes / 1440;
                 
                 metrics.postSept10SentToScheduledDaysSum += timeDiffDays;
-                metrics.postSept10SentToScheduledCount++;
+                    metrics.postSept10SentToScheduledCount++;
                 
                 // Log for debugging
                 Logger.log(`AvgTimeCalc_Include: Candidate=[${candidateName}], Feedback_status=[${feedbackStatusRaw}], Sent=[${sentDate.toISOString()}], Scheduled=[${scheduleDateForAvg.toISOString()}], DiffMinutes=[${timeDiffMinutes.toFixed(2)}], DiffDays=[${timeDiffDays.toFixed(2)}]`);
@@ -1215,18 +1605,18 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
        if (feedbackStatusIdx !== -1 && feedbackStatusRaw) {
          uniqueFeedbackStatuses.add(feedbackStatusRaw);
        }
-    }
+       }
 
-    // --- Check for Recruiter Submission Awaited (AI_RECOMMENDED in Feedback_status)
+       // --- Check for Recruiter Submission Awaited (AI_RECOMMENDED in Feedback_status)
     // Count from deduplicated data (after deduplication by Profile_id + Position_id)
     // Simple: Deduplicate, then count Feedback_status = AI_RECOMMENDED
     // Make comparison case-insensitive to handle variations in the data
     const feedbackStatusNormalizedForAI = feedbackStatusRaw.toLowerCase().trim();
     const isAIRecommended = feedbackStatusNormalizedForAI === 'ai_recommended';
     if (feedbackStatusIdx !== -1 && isAIRecommended) {
-        metrics.byJobFunction[jobFunc].recruiterSubmissionAwaited++;
-        // Note: No country-specific count for this yet
-        metrics.byRecruiter[recruiter].recruiterSubmissionAwaited++; // <<< INCREMENT Recruiter Submission Awaited
+           metrics.byJobFunction[jobFunc].recruiterSubmissionAwaited++;
+           // Note: No country-specific count for this yet
+           metrics.byRecruiter[recruiter].recruiterSubmissionAwaited++; // <<< INCREMENT Recruiter Submission Awaited
         metrics.byCreator[creator].recruiterSubmissionAwaited++; // <<< INCREMENT Creator Submission Awaited
     }
   });
@@ -1248,7 +1638,7 @@ function calculateCompanyMetricsRB(filteredRows, colIndices) {
       const isCompleted = feedbackStatusNormalized === 'submitted' || feedbackStatusNormalized === 'ai_recommended';
       if (isCompleted) {
         completedCountForStatusTable++;
-      }
+       }
     }
   });
   
@@ -1494,40 +1884,85 @@ function generateRecruiterTableRowsHtml(recruiterData) {
  * @param {number} creatorIdx_Log The index of the Creator_user_id column from the log sheet (-1 if not found).
  * @returns {string} The HTML content for the email body.
  */
-function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorActivityData, creatorIdx_Log, hiringMetrics, validationSheetUrl, aiCoverageMetrics, recruiterValidationSheets) {
+function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorActivityData, creatorIdx_Log, hiringMetrics, validationSheetUrl, aiCoverageMetrics, recruiterValidationSheets, adoptionByRecruiterData) {
   Logger.log(`DEBUG: AI Coverage Metrics in HTML report: ${aiCoverageMetrics ? 'Present' : 'Null/Undefined'}`);
   if (aiCoverageMetrics) {
     Logger.log(`DEBUG: AI Coverage Metrics details - Total eligible: ${aiCoverageMetrics.totalEligible}, Total AI interviews: ${aiCoverageMetrics.totalAIInterviews}, Overall percentage: ${aiCoverageMetrics.overallPercentage}%`);
   }
   
+  // Debug adoption by recruiter data
+  Logger.log(`DEBUG: Adoption By Recruiter Data in HTML report: ${adoptionByRecruiterData ? (adoptionByRecruiterData.length > 0 ? `Present with ${adoptionByRecruiterData.length} recruiters` : 'Present but empty array') : 'Null/Undefined'}`);
+  if (adoptionByRecruiterData && adoptionByRecruiterData.length > 0) {
+    Logger.log(`DEBUG: First recruiter in adoption data: ${adoptionByRecruiterData[0].recruiter_name}`);
+  }
+  
   // AI Insights feature removed
   // Helper to generate timeseries table (limited to last 5 days)
   const generateTimeseriesTable = (dailyCounts) => {
-      const sortedDates = Object.keys(dailyCounts).sort((a, b) => {
+      // Helper function to parse date string (DD-MMM-YY format) - matches vsFormatDateRB format
+      const parseDateStr = (dateStr) => {
           try {
-              // Parsing DD-MMM-YY format
-              const dateA = new Date(a.replace(/(\\d{2})-(\\w{3})-(\\d{2})/, '$2 $1, 20$3'));
-              const dateB = new Date(b.replace(/(\\d{2})-(\\w{3})-(\\d{2})/, '$2 $1, 20$3'));
-              return dateB - dateA; // Descending
-          } catch (e) { return b.localeCompare(a); }
+              return new Date(dateStr.replace(/(\d{2})-(\w{3})-(\d{2})/, '$2 $1, 20$3'));
+          } catch (e) { return null; }
+      };
+      
+      // Helper function to get day of week abbreviation
+      const getDayAbbreviation = (date) => {
+          const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          return days[date.getDay()];
+      };
+      
+      // Find the previous 5 weekdays (excluding today and weekends)
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const last5Weekdays = [];
+      // Start from yesterday (exclude today)
+      let currentDate = new Date(today);
+      currentDate.setDate(currentDate.getDate() - 1);
+      let daysBack = 0;
+      
+      // Go back up to 14 days to find 5 weekdays (worst case: Fri, Sat, Sun, Mon, Tue, Wed, Thu, Fri)
+      while (last5Weekdays.length < 5 && daysBack < 14) {
+          const dayOfWeek = currentDate.getDay();
+          // Skip weekends (Saturday=6, Sunday=0)
+          if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+              const dateStr = vsFormatDateRB(currentDate); // Use existing format function
+              // Always add the weekday (even if count is 0)
+              last5Weekdays.push(dateStr);
+          }
+          // Move to previous day
+          currentDate.setDate(currentDate.getDate() - 1);
+          daysBack++;
+      }
+      
+      // Sort dates in descending order (most recent first)
+      last5Weekdays.sort((a, b) => {
+          const dateA = parseDateStr(a);
+          const dateB = parseDateStr(b);
+          if (!dateA || !dateB) return 0;
+          return dateB - dateA;
       });
 
-      const fiveDaysAgo = new Date();
-      fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
-      fiveDaysAgo.setHours(0, 0, 0, 0);
-
-      const filteredDates = sortedDates.filter(dateStr => {
-          try {
-              const date = new Date(dateStr.replace(/(\\d{2})-(\\w{3})-(\\d{2})/, '$2 $1, 20$3'));
-              return date >= fiveDaysAgo;
-          } catch (e) { return false; }
-      });
-
-      if (filteredDates.length === 0) return '<p style="font-size: 11px; color: #999; margin-top: 12px; text-align: center;">No invitations in last 5 days.</p>';
+      if (last5Weekdays.length === 0) return '<p style="font-size: 11px; color: #999; margin-top: 12px; text-align: center;">No invitations in last 5 weekdays.</p>';
 
       let tableHtml = '<table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;"><thead><tr><th style="padding: 8px; text-align: left; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Date</th><th style="padding: 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Count</th></tr></thead><tbody>';
-      filteredDates.forEach((date, index) => {
-          tableHtml += `<tr><td style="padding: 10px 8px; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${date}</td><td style="padding: 10px 8px; text-align: right; font-size: 12px; color: #667eea; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${dailyCounts[date]}</td></tr>`;
+      last5Weekdays.forEach((dateStr, index) => {
+          const count = dailyCounts[dateStr] || 0; // Show 0 if no data for this date
+          const date = parseDateStr(dateStr);
+          const dayOfWeek = date ? date.getDay() : -1;
+          const dayAbbr = date ? getDayAbbreviation(date) : '';
+          const dateWithDay = `${dateStr} (${dayAbbr})`;
+          
+          // Check if Thursday (4) or Friday (5) - use blue text color
+          const isThuOrFri = dayOfWeek === 4 || dayOfWeek === 5;
+          const textColor = isThuOrFri ? '#1e3a8a' : '#1a1a1a'; // Darker blue text for Thu/Fri, default for others
+          const countColor = isThuOrFri ? '#1e3a8a' : '#667eea'; // Darker blue count for Thu/Fri, lighter blue for others
+          
+          tableHtml += `<tr>
+            <td style="padding: 10px 8px; font-size: 12px; color: ${textColor}; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${dateWithDay}</td>
+            <td style="padding: 10px 8px; text-align: right; font-size: 12px; color: ${countColor}; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${count}</td>
+          </tr>`;
       });
       tableHtml += '</tbody></table>';
       return tableHtml;
@@ -1542,7 +1977,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
   let html = `<!DOCTYPE html>
 <html>
 <head>
-  <title>AI Interviewer adoption at Amgen</title>
+  <title>Eightfold AI Interviewer at Amgen</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
@@ -1554,8 +1989,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
           <!-- Modern Header with Gradient -->
           <tr>
             <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 32px 24px; text-align: center;">
-              <h1 style="color: #ffffff; font-size: 28px; font-weight: 700; margin: 0; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">AI Interviewer adoption at Amgen</h1>
-              <p style="color: rgba(255,255,255,0.9); font-size: 14px; margin: 8px 0 0 0; font-weight: 400;">${VS_COMPANY_NAME_RB} • ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+              <h1 style="color: #ffffff; font-size: 28px; font-weight: 700; margin: 0; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">Eightfold AI Interviewer at Amgen</h1>
             </td>
           </tr>
 
@@ -1576,6 +2010,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                       <div style="font-size: 36px; font-weight: 700; color: #ffffff; line-height: 1;">${metrics.postSept10KpiCompletionRate}<span style="font-size: 20px;">%</span></div>
                     </div>
                     <div style="text-align: center; font-size: 9px; color: #999; margin-top: 6px;">Excl. <48hrs</div>
+                    <div style="text-align: center; font-size: 9px; color: #999; margin-top: 4px; line-height: 1.3; padding: 0 8px;">ℹ️ Excludes invitations sent less than 48 hours ago. This gives candidates time to respond before calculating completion rates.</div>
                   </td>
                   <td width="25%" style="vertical-align: top; padding: 0;">
                     <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3); text-align: center;">
@@ -1606,26 +2041,26 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
                       <div style="font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 12px; letter-spacing: -0.2px;">Completion Status</div>
                       <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
                          <thead><tr><th style="padding: 8px; text-align: left; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Status</th><th style="padding: 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Count</th><th style="padding: 8px; text-align: right; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">%</th></tr></thead>
-                         <tbody>
-                         ${Object.entries(metrics.interviewStatusDistribution)
+                 <tbody>
+                 ${Object.entries(metrics.interviewStatusDistribution)
                                      .sort(([, dataA], [, dataB]) => dataB.count - dataA.count)
                                      .map(([status, data], index) => `<tr>
                                          <td style="padding: 10px 8px; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${status}</td>
                                          <td style="padding: 10px 8px; text-align: right; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.count}</td>
                                          <td style="padding: 10px 8px; text-align: right; font-size: 12px; color: #667eea; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.percentage}%</td>
-                                     </tr>`).join('')}
-                         </tbody>
-                     </table>
-                    </div>
-                  </td>
+                             </tr>`).join('')}
+                 </tbody>
+             </table>
+            </div>
+          </td>
                   <td width="50%" style="vertical-align: top; padding: 0;">
                      <div style="background: #ffffff; padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
                        <div style="font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 12px; letter-spacing: -0.2px;">Daily Invitations Trend (5d)</div>
                        ${generateTimeseriesTable(metrics.dailySentCounts)}
-                    </div>
-                  </td>
-                </tr>
-              </table>
+            </div>
+          </td>
+        </tr>
+      </table>
             </td>
           </tr>
 
@@ -1634,6 +2069,7 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
             <td style="padding-top: 10px; padding-bottom: 10px;">
               <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 16px;">
                  <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">Breakdown by Recruiter of the Position</div>
+                 <div style="font-size: 10px; color: #666; margin-bottom: 12px; line-height: 1.4; padding: 8px 12px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #667eea;">ℹ️ CREATOR FEEDBACK REVIEW PENDING = AI screening completed, recruiter/sourcer review pending. Completion % includes all invitations (no 48-hour exclusion), so may be lower than the KPI box above.</div>
                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
              <thead>
                 <tr>
@@ -1685,11 +2121,22 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
             </td>
           </tr>
 
+          <!-- AI Interview Adoption by Recruiter (Stacked Bar Chart) - MODULAR: Can be removed if needed -->
+          <tr>
+            <td style="padding: 0 24px 24px;">
+              ${adoptionByRecruiterData && adoptionByRecruiterData.length > 0 ? 
+                generateAdoptionByRecruiterBarChartHtml(adoptionByRecruiterData) : 
+                generateAdoptionByRecruiterBarChartHtml(null)
+              }
+            </td>
+          </tr>
+
           <!-- Breakdown by Creator (Table) -->
           <tr>
             <td style="padding: 0 24px 24px;">
               <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
                  <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">Breakdown by Creator</div>
+                 <div style="font-size: 10px; color: #666; margin-bottom: 12px; line-height: 1.4; padding: 8px 12px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #667eea;">ℹ️ CREATOR FEEDBACK REVIEW PENDING = AI screening completed, recruiter/sourcer review pending. Completion % includes all invitations (no 48-hour exclusion), so may be lower than the KPI box above.</div>
                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
              <thead>
                 <tr>
@@ -1741,54 +2188,19 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
             </td>
           </tr>
 
-          <!-- AI Interview Coverage Bar Chart -->
-          ${aiCoverageMetrics ? `
-          <tr>
-            <td style="padding: 0 24px 24px;">
-              ${generateAICoverageBarChartHtml(aiCoverageMetrics)}
-            </td>
-          </tr>
-          ` : `
-          <tr>
-            <td style="padding: 0 24px 24px;">
-              <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">AI Interview Coverage by Recruiter</div>
-                <div style="text-align: center; padding: 60px 20px; color: #999; font-size: 14px; font-weight: 500;">Coming soon</div>
-              </div>
-            </td>
-          </tr>
-          `}
-
-          <!-- Detailed Validation Sheets -->
-          ${recruiterValidationSheets ? `
-          <tr>
-            <td style="padding: 0 24px 24px;">
-              ${generateValidationSheetsHtml(recruiterValidationSheets)}
-            </td>
-          </tr>
-          ` : `
-          <tr>
-            <td style="padding: 0 24px 24px;">
-              <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">Detailed Validation Sheets</div>
-                <div style="text-align: center; padding: 60px 20px; color: #999; font-size: 14px; font-weight: 500;">Coming soon</div>
-              </div>
-            </td>
-          </tr>
-          `}
-
           <!-- Creator Last Invite Activity -->
           <tr>
             <td style="padding: 0 24px 24px;">
               <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
                 <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">Creator Last Invite Activity</div>
+                <div style="font-size: 10px; color: #666; margin-bottom: 12px; line-height: 1.4; padding: 8px 12px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #667eea;">ℹ️ Shows when each creator last sent an invitation and daily activity trend. Trend shows counts for last 10 days (Sun/Sat shown as text, weekdays as numbers). Data is deduplicated.</div>
                 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
                   <thead>
                     <tr>
                       <th style="padding: 10px 8px; text-align: left; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Creator</th>
                       <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Last Sent</th>
                       <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0;">Trend (10d)</th>
-                    </tr>
+                         </tr>
                   </thead>
                   <tbody>
                     ${creatorActivityData && creatorActivityData.length > 0 ?
@@ -1823,90 +2235,6 @@ function createRecruiterBreakdownHtmlReport(metrics, adoptionChartData, creatorA
           </tr>
 
 
-
-     <!-- Breakdown by Job Function -->
-          <tr>
-             <td style="padding: 0 24px 24px;">
-               <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                  <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">Breakdown by Job Function</div>
-                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
-             <thead>
-                <tr>
-                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Job Function</th>
-                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">INVITATIONS<br>SENT</th>
-                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">COMPLETED<br>INTERVIEWS</th>
-                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">UPCOMING<br>SCHEDULED INTERVIEW</th>
-                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">PENDING<br>CANDIDATE INTERVIEW</th>
-                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">FEEDBACK SUBMITTED<br>BY CREATOR</th>
-                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">CREATOR FEEDBACK<br>REVIEW PENDING</th>
-                 </tr>
-             </thead>
-             <tbody>
-                 ${Object.entries(metrics.byJobFunction)
-                     .sort(([funcA], [funcB]) => funcA.localeCompare(funcB))
-                              .map(([func, data], index) => `
-                                  <tr>
-                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${func}</td>
-                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.sent}</td>
-                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.completedNumber} <span style="color: #667eea; font-size: 11px;">${data.completedPercentOfSent}%</span></td>
-                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.scheduled}</td>
-                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.pendingNumber} <span style="color: #667eea; font-size: 11px;">${data.pendingPercentOfSent}%</span></td>
-                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.feedbackSubmitted}</td>
-                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; border-bottom: 1px solid #f5f5f5;">
-                                        ${data.recruiterSubmissionAwaited > 0 ? 
-                                            `<span style="color: #f5576c; font-weight: 700;">${data.recruiterSubmissionAwaited}</span>` : 
-                                            `<span style="color: #999;">${data.recruiterSubmissionAwaited}</span>`
-                                        }
-                                      </td>
-                         </tr>
-                     `).join('')}
-             </tbody>
-         </table>
-     </div>
-             </td>
-          </tr>
-
-     <!-- Breakdown by Location Country -->
-           <tr>
-             <td style="padding: 0 24px 24px;">
-               <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                  <div style="font-weight: 700; font-size: 15px; color: #1a1a1a; margin-bottom: 16px; letter-spacing: -0.3px;">Breakdown by Location Country</div>
-                   <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
-             <thead>
-                <tr>
-                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Country</th>
-                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">Sent</th>
-                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">COMPLETED<br>INTERVIEWS</th>
-                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">UPCOMING<br>SCHEDULED INTERVIEW</th>
-                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">PENDING<br>CANDIDATE INTERVIEW</th>
-                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">FEEDBACK SUBMITTED<br>BY CREATOR</th>
-                            <th style="padding: 10px 8px; text-align: center; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #f0f0f0; line-height: 1.3;">CREATOR FEEDBACK<br>REVIEW PENDING</th>
-                 </tr>
-             </thead>
-             <tbody>
-                 ${Object.entries(metrics.byCountry)
-                     .sort(([ctryA], [ctryB]) => ctryA.localeCompare(ctryB))
-                              .map(([ctry, data], index) => `
-                                  <tr>
-                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${ctry}</td>
-                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 600; border-bottom: 1px solid #f5f5f5;">${data.sent}</td>
-                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.completedNumber} <span style="color: #667eea; font-size: 11px;">${data.completedPercentOfSent}%</span></td>
-                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.scheduled}</td>
-                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.pendingNumber} <span style="color: #667eea; font-size: 11px;">${data.pendingPercentOfSent}%</span></td>
-                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; color: #1a1a1a; font-weight: 500; border-bottom: 1px solid #f5f5f5;">${data.feedbackSubmitted}</td>
-                                      <td style="padding: 12px 8px; text-align: center; font-size: 12px; border-bottom: 1px solid #f5f5f5;">
-                                        ${data.recruiterSubmissionAwaited > 0 ? 
-                                            `<span style="color: #f5576c; font-weight: 700;">${data.recruiterSubmissionAwaited}</span>` : 
-                                            `<span style="color: #999;">${data.recruiterSubmissionAwaited}</span>`
-                                        }
-                                      </td>
-                         </tr>
-                     `).join('')}
-             </tbody>
-         </table>
-     </div>
-             </td>
-          </tr>
 
           <!-- Modern Footer -->
           <tr>
